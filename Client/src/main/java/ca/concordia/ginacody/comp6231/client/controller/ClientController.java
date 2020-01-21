@@ -8,12 +8,12 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
 @ShellComponent
-public class GameController {
+public class ClientController {
 
     /**
      * Class Logger
      */
-    private static Logger log = LoggerFactory.getLogger(GameController.class);
+    private static Logger log = LoggerFactory.getLogger(ClientController.class);
 
     /**
      * shellHelper bean
@@ -27,7 +27,7 @@ public class GameController {
         if (log.isDebugEnabled()) {
             log.debug("inside login");
         }
-        return shellHelper.getSuccessMessage("Game saved successfully");
+        return shellHelper.getSuccessMessage("User logged in successfully");
     }
 
 }
