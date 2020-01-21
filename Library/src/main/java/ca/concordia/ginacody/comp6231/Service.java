@@ -3,9 +3,8 @@ package ca.concordia.ginacody.comp6231;
 /**
  * Hello world!
  */
-public class App {
+public class Service {
     public static void main(String[] args) {
         System.out.println("Hello World!");
     }
-
 }

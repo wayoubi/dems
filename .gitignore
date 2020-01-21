@@ -247,3 +247,5 @@ $RECYCLE.BIN/
 
 target/
 .idea/
+
+*.iml
