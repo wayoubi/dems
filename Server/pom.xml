@@ -2,23 +2,29 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>ca.concordia.ginacody.comp6231</groupId>
         <artifactId>DEMS</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
     <groupId>ca.concordia.ginacody.comp6231</groupId>
     <artifactId>Server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Server</name>
     <url>http://maven.apache.org</url>
+
     <dependencies>
+
         <dependency>
             <groupId>ca.concordia.ginacody.comp6231</groupId>
             <artifactId>Library</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -29,12 +35,17 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <jvmArguments>-Xmx256m</jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
