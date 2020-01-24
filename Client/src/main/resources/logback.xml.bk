@@ -9,8 +9,16 @@
 		</encoder>
 	</appender>
 
-	<logger name="ca.concordia" level="debug" additivity="false">
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<!--<pattern>%-5relative %-5level %logger{35} - %msg%n</pattern>-->
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="ca.concordia" level="info" additivity="false">
 		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT" />
 	</logger>
 
 </configuration>

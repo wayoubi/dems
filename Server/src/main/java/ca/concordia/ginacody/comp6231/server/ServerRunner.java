@@ -32,8 +32,8 @@ public class ServerRunner {
         MyRmiExporter exporter = new MyRmiExporter();
         exporter.setServiceInterface(serviceInterface);
         exporter.setService(implementation);
-        //exporter.setServiceName(serviceInterface.getSimpleName() + optional.get());
-        exporter.setServiceName(serviceInterface.getSimpleName());
+        exporter.setServiceName(serviceInterface.getSimpleName() + optional.get());
+        //exporter.setServiceName(serviceInterface.getSimpleName());
         exporter.setRegistryHost("localhost");
         exporter.setRegistryPort(1099);
         return exporter;
