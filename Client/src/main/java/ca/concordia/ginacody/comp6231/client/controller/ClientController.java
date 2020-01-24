@@ -1,10 +1,10 @@
 package ca.concordia.ginacody.comp6231.client.controller;
 
 import ca.concordia.ginacody.comp6231.client.cache.SessionUser;
-import ca.concordia.ginacody.comp6231.client.rmi.CabBookingServiceFactoryBean;
+import ca.concordia.ginacody.comp6231.client.rmi.EventManagementServiceFactoryBean;
 import ca.concordia.ginacody.comp6231.client.shell.ShellHelper;
-import ca.concordia.ginacody.comp6231.services.BookingException;
-import ca.concordia.ginacody.comp6231.services.CabBookingService;
+import ca.concordia.ginacody.comp6231.services.EventManagementService;
+import ca.concordia.ginacody.comp6231.services.EventManagementServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -19,7 +19,7 @@ public class ClientController {
 
     private static Logger log = LoggerFactory.getLogger(ClientController.class);
 
-    private ObjectProvider<CabBookingServiceFactoryBean> cabBookingServiceFactoryBeanProvider;
+    private ObjectProvider<EventManagementServiceFactoryBean> eventManagementServiceFactoryBeanProvider;
 
     @Autowired
     private ShellHelper shellHelper;
@@ -31,8 +31,8 @@ public class ClientController {
     private BeanFactory beanFactory;
 
     @Autowired
-    public void UsingMyPrototype(ObjectProvider<CabBookingServiceFactoryBean> cabBookingServiceFactoryBeanProvider) {
-        this.cabBookingServiceFactoryBeanProvider = cabBookingServiceFactoryBeanProvider;
+    public void UsingMyPrototype(ObjectProvider<EventManagementServiceFactoryBean> eventManagementServiceFactoryBeanProvider) {
+        this.eventManagementServiceFactoryBeanProvider = eventManagementServiceFactoryBeanProvider;
     }
 
     @ShellMethod("Login to the system")
@@ -43,11 +43,11 @@ public class ClientController {
         try {
             sessionUser.setUserName(userName);
             sessionUser.setLocation(userName);
-            CabBookingServiceFactoryBean cabBookingServiceBean = this.cabBookingServiceFactoryBeanProvider.getObject(sessionUser);
-            CabBookingService cabBookingService = beanFactory.getBean(CabBookingService.class);
-            shellHelper.printSuccess(cabBookingService.bookRide("13 Seagate Blvd, Key Largo, FL 33037").toString());
-        } catch (BookingException e) {//
-            e.printStackTrace();
+            EventManagementServiceFactoryBean cabBookingServiceBean = this.eventManagementServiceFactoryBeanProvider.getObject(sessionUser);
+            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
+            shellHelper.printSuccess(eventManagementService.login(userName));
+        } catch (EventManagementServiceException e) {//
+            return shellHelper.getErrorMessage(e.getMessage());
         }
         return shellHelper.getSuccessMessage("User logged in successfully");
     }

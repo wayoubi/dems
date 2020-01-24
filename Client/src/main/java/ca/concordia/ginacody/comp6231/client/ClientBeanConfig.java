@@ -1,7 +1,8 @@
 package ca.concordia.ginacody.comp6231.client;
 
 import ca.concordia.ginacody.comp6231.client.cache.SessionUser;
-import ca.concordia.ginacody.comp6231.client.rmi.CabBookingServiceFactoryBean;
+
+import ca.concordia.ginacody.comp6231.client.rmi.EventManagementServiceFactoryBean;
 import ca.concordia.ginacody.comp6231.client.shell.ShellHelper;
 import org.jline.terminal.Terminal;
 import org.jline.utils.AttributedString;
@@ -29,7 +30,7 @@ public class ClientBeanConfig {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    CabBookingServiceFactoryBean service(SessionUser sessionUser) {
-        return new CabBookingServiceFactoryBean(sessionUser);
+    EventManagementServiceFactoryBean service(SessionUser sessionUser) {
+        return new EventManagementServiceFactoryBean(sessionUser);
     }
 }

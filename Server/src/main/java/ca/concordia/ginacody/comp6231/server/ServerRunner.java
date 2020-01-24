@@ -1,6 +1,7 @@
 package ca.concordia.ginacody.comp6231.server;
 
-import ca.concordia.ginacody.comp6231.services.CabBookingService;
+
+import ca.concordia.ginacody.comp6231.services.EventManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.remoting.rmi.RmiServiceExporter;
 
 import java.util.Optional;
 
@@ -21,14 +21,14 @@ public class ServerRunner {
     private ApplicationArguments applicationArguments;
 
     @Bean
-    CabBookingService bookingService() {
-        return new CabBookingServiceImpl();
+    EventManagementService bookingService() {
+        return new EventManagementServiceImpl();
     }
 
     @Bean
-    MyRmiExporter exporter(CabBookingService implementation) {
+    MyRmiExporter exporter(EventManagementService implementation) {
         Optional<String> optional = Optional.ofNullable(applicationArguments.getSourceArgs()[0]);
-        Class<CabBookingService> serviceInterface = CabBookingService.class;
+        Class<EventManagementService> serviceInterface = EventManagementService.class;
         MyRmiExporter exporter = new MyRmiExporter();
         exporter.setServiceInterface(serviceInterface);
         exporter.setService(implementation);
