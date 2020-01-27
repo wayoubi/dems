@@ -1,8 +1,6 @@
 package ca.concordia.ginacody.comp6231.client.cache;
 
-import ca.concordia.ginacody.comp6231.UserType;
 import org.springframework.stereotype.Component;
-import java.util.Objects;
 
 @Component
 public class SessionUser {
@@ -34,6 +32,13 @@ public class SessionUser {
     public void setUserName(String userName) {
         this.userName = userName;
         this.location = this.userName.substring(0, 3);
+        if(this.userName.charAt(3)=='C') {
+            this.setUserType(UserType.CUSTOMER);
+        } else if(this.userName.charAt(3)=='M') {
+            this.setUserType(UserType.EVENT_MANAGER);
+        } else {
+            throw new RuntimeException("Invalid Username, user type cannot be determined");
+        }
     }
 
     public String getUserName() {
