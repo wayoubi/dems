@@ -2,7 +2,7 @@ package ca.concordia.ginacody.comp6231.server;
 
 
 
-import ca.concordia.ginacody.comp6231.services.EventManagementServiceException;
+import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
 import ca.concordia.ginacody.comp6231.services.EventManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
