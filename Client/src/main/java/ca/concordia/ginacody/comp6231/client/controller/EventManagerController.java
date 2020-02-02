@@ -8,7 +8,6 @@ import ca.concordia.ginacody.comp6231.enums.EventTimeSlot;
 import ca.concordia.ginacody.comp6231.enums.EventType;
 import ca.concordia.ginacody.comp6231.services.EventManagementService;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
-import ca.concordia.ginacody.comp6231.vo.EventVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -148,7 +147,6 @@ public class EventManagerController {
         try {
             EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
             EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-            EventVO eventVO = new EventVO(evertID, EventType.get(eventType), capacityValue);
             result = shellHelper.getSuccessMessage(eventManagementService.addEvent(evertID, EventType.get(eventType), capacityValue));
         } catch (EventManagementServiceException e) {
             return shellHelper.getErrorMessage(e.getMessage());

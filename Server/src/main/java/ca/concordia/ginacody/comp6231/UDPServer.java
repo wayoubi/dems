@@ -42,11 +42,12 @@ public class UDPServer implements Runnable {
         DatagramSocket aSocket = null;
         try {
             aSocket = new DatagramSocket(Configuration.UDP_PORT);
-            LOGGER.info("UDP Server started on port {}", Configuration.UDP_PORT);
+            LOGGER.info("UDP Server started on port {}, Listening ......", Configuration.UDP_PORT);
             byte[] buffer = new byte[1000];
             while (this.isStarted()) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 aSocket.receive(request);
+                LOGGER.info("New message received by UDP Server, will be processed ResponseProcessor");
                 ResponseProcessor responseProcessor = new ResponseProcessor(aSocket, request);
                 responseProcessor.setName(String.format("Response Processor - ", responseProcessor.hashCode()));
                 responseProcessor.start();

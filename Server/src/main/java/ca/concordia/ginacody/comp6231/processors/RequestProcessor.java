@@ -1,5 +1,6 @@
 package ca.concordia.ginacody.comp6231.processors;
 
+import ca.concordia.ginacody.comp6231.config.Configuration;
 import ca.concordia.ginacody.comp6231.services.EventManagementServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,20 +30,30 @@ public class RequestProcessor extends Thread {
 
     /**
      *
+     */
+    private String remoteLocation;
+
+    /**
+     *
      * @param requestMessage
      */
-    public RequestProcessor(String requestMessage){
+    public RequestProcessor(String remoteLocation, String requestMessage){
         this.requestMessage = requestMessage;
+        this.remoteLocation = remoteLocation;
     }
 
+    /**
+     *
+     */
     @Override
     public void run() {
         DatagramSocket aSocket = null;
         try {
             aSocket = new DatagramSocket();
+            aSocket.setSoTimeout(5000);
             byte[] m = this.requestMessage.getBytes();
             InetAddress aHost = InetAddress.getByName("127.0.0.1");
-            int serverPort = 8080;
+            int serverPort = Configuration.UDP_SERVERS_PORTS.get(this.remoteLocation);
             DatagramPacket request = new DatagramPacket(m, m.length, aHost, serverPort);
             aSocket.send(request);
             byte[] buffer = new byte[1000];
@@ -51,15 +62,21 @@ public class RequestProcessor extends Thread {
             replyMessage = new String(reply.getData()).substring(0, reply.getData().length);
 
         } catch (SocketException e) {
-            LOGGER.error(e.getMessage());
+            this.replyMessage = String.format("Error while communicating with remote server %s, error is $s", this.remoteLocation, e.getMessage());
+            LOGGER.error("{}", e.getMessage());
         } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+            this.replyMessage = String.format("Error while communicating with remote server %s, error is %s", this.remoteLocation, e.getMessage());
+            LOGGER.error("{}", e.getMessage());
         } finally {
             if (aSocket != null)
                 aSocket.close();
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getReplyMessage() {
         return replyMessage;
     }
