@@ -49,13 +49,18 @@ public class ResponseProcessor extends Thread {
             Optional<EventType> optional = Optional.ofNullable(EventType.get(stringTokenizer.nextToken()));
             if(optional.isPresent()) {
                 EventManagementBusinessFacade eventManagementBusinessFacade = new EventManagementBusinessFacade();
-                stringBuilder.append(eventManagementBusinessFacade.listEventAvailability(optional.get()));
+                try {
+                    stringBuilder.append(eventManagementBusinessFacade.listEventAvailability(optional.get()));
+                } catch(EventManagementServiceException e) {
+                    stringBuilder.append(String.format("%s from remote server %s", e.getMessage(), Configuration.SERVER_LOCATION));
+                }
+
             }
         } else {
             stringBuilder.append(String.format("Unsupported Operation %s", command)) ;
         }
         try {
-            DatagramPacket reply = new DatagramPacket(this.getRequest().getData(), request.getLength(), request.getAddress(), request.getPort());
+            DatagramPacket reply = new DatagramPacket(stringBuilder.toString().getBytes(), stringBuilder.toString().getBytes().length, request.getAddress(), request.getPort());
             this.getSocket().send(reply);
         } catch (IOException ioex) {
            throw new EventManagementServiceException(ioex.getMessage());

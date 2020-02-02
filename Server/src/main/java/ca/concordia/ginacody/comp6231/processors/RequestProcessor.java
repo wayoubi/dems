@@ -42,7 +42,7 @@ public class RequestProcessor extends Thread {
             aSocket = new DatagramSocket();
             byte[] m = this.requestMessage.getBytes();
             InetAddress aHost = InetAddress.getByName("127.0.0.1");
-            int serverPort = 8081;
+            int serverPort = 8080;
             DatagramPacket request = new DatagramPacket(m, m.length, aHost, serverPort);
             aSocket.send(request);
             byte[] buffer = new byte[1000];

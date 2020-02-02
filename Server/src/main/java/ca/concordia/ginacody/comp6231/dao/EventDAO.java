@@ -106,7 +106,6 @@ public class EventDAO {
             return stringEventVOMap;
         });
         LOGGER.info("{} Events List generated successfully", eventType);
-        stringBuilder.append(String.format("%s Events List generated successfully", eventType));
         return stringBuilder.toString();
     }
 }
