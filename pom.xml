@@ -49,8 +49,7 @@
     <modules>
         <module>Library</module>
         <module>Client</module>
-        <module>RMIBasicServer</module>
-        <module>RMISpringServer</module>
+        <module>Server</module>
   </modules>
 
 

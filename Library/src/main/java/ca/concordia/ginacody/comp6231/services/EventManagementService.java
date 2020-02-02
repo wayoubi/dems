@@ -14,4 +14,8 @@ public interface EventManagementService extends java.rmi.Remote {
 
     public String addEvent(String eventID, EventType eventType, int bookingCapacity) throws EventManagementServiceException, RemoteException;
 
+    public String removeEvent(String eventID, EventType eventType) throws EventManagementServiceException, RemoteException;
+
+    public String listEventAvailability(EventType eventType) throws EventManagementServiceException, RemoteException;
+
 }

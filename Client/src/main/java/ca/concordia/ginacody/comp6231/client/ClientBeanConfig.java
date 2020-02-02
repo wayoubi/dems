@@ -1,6 +1,6 @@
 package ca.concordia.ginacody.comp6231.client;
 
-import ca.concordia.ginacody.comp6231.client.cache.SessionUser;
+import ca.concordia.ginacody.comp6231.client.cache.Session;
 
 import ca.concordia.ginacody.comp6231.client.rmi.EventManagementServiceFactoryBean;
 import ca.concordia.ginacody.comp6231.client.shell.ShellHelper;
@@ -30,7 +30,7 @@ public class ClientBeanConfig {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    EventManagementServiceFactoryBean service(SessionUser sessionUser) {
+    EventManagementServiceFactoryBean service(Session sessionUser) {
         return new EventManagementServiceFactoryBean(sessionUser);
     }
 }

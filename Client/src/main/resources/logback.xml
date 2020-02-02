@@ -16,9 +16,8 @@
 		</encoder>
 	</appender>
 
-	<logger name="ca.concordia" level="info" additivity="false">
+	<logger name="ca.concordia" level="debug" additivity="false">
 		<appender-ref ref="FILE" />
-		<appender-ref ref="STDOUT" />
 	</logger>
 
 </configuration>
