@@ -51,21 +51,16 @@ public class EventManagementServiceImpl extends UnicastRemoteObject implements E
 
     @Override
     public String listEventAvailability(EventType eventType) throws EventManagementServiceException, RemoteException {
-
         LOGGER.info("Listing Available Events from local server, EventType {}", eventType);
-
         StringBuilder stringBuilder = new StringBuilder();
         try {
             stringBuilder.append(eventManagementBusinessFacade.listEventAvailability(eventType));
         }catch(EventManagementServiceException e) {
-            stringBuilder.append(String.format("%s from local server %s", e.getMessage(), Configuration.SERVER_LOCATION));
-            stringBuilder.append(System.lineSeparator());
+            stringBuilder.append(String.format("%s from local server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
         }
-
         LOGGER.info("Listing Available Events from remote locations, EventType {}", eventType);
         Configuration.UDP_SERVERS_PORTS.keySet().stream().forEach(location -> {
             if(!Configuration.SERVER_LOCATION.equals(location)) {
-                System.out.println(String.format(">>>>>>>>>> remote %s local %s", location ,Configuration.SERVER_LOCATION));
                 LOGGER.info("Listing Available Events from {}, EventType {}", location, eventType);
                 RequestProcessor requestProcessor = new RequestProcessor(location, String.format("%s:listEventAvailability:%s:", Configuration.SERVER_LOCATION, eventType.getName()));
                 requestProcessor.setName(String.format("Request Processor - %s", requestProcessor.hashCode()));

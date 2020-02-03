@@ -10,6 +10,7 @@ import ca.concordia.ginacody.comp6231.services.EventManagementService;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
 
+/**
+ *
+ */
 @ShellComponent
 public class EventManagerController {
 
+    /**
+     *
+     */
     private static Logger log = LoggerFactory.getLogger(EventManagerController.class);
 
     private ObjectProvider<EventManagementServiceFactoryBean> eventManagementServiceFactoryBeanProvider;
@@ -64,7 +71,9 @@ public class EventManagerController {
         log.debug("checking username to be in valid format {} {}", usernamePattern, userName);
         Pattern pattern = Pattern.compile(usernamePattern);
         if(!pattern.matcher(userName).matches()) {
-            return shellHelper.getErrorMessage("Invalid Username");
+            String message  = "Invalid Username";
+            session.getUserActivityLogger().log(String.format("action [login], param userName [%s], result [%s]", userName, message));
+            return shellHelper.getErrorMessage(message);
         }
         String result = null;
         try {
@@ -73,29 +82,33 @@ public class EventManagerController {
             EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
             result = shellHelper.getSuccessMessage(eventManagementService.login(userName));
         } catch (EventManagementServiceException e) {
+            session.getUserActivityLogger().log(String.format("action [login], param userName [%s], error [%s]", userName, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         } catch (RemoteException e) {
+            session.getUserActivityLogger().log(String.format("action [login], param userName [%s], error [%s]", userName, e.getMessage()));
+            return shellHelper.getErrorMessage(e.getMessage());
+        } catch (BeansException e) {
+            session.getUserActivityLogger().log(String.format("action [login], param userName [%s], error [%s]", userName, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }
+        session.getUserActivityLogger().log(String.format("action [login], param userName [%s], result [%s]", userName, result));
         return result;
     }
 
 
     /**
      *
-     * @param evertID
+     * @param eventID
      * @param eventType
      * @param capacity
      * @return
      */
     @ShellMethod("Create Event")
-    public String createEvent(@ShellOption(value = { "-id" }) String evertID,
+    public String createEvent(@ShellOption(value = { "-id" }) String eventID,
                               @ShellOption(value = { "-type" }) String eventType,
                               @ShellOption(value = { "-capacity" }) String capacity
                               ) {
-        log.debug("inside createEvent , evertID {}, eventType {}, capacity {}", evertID, eventType, capacity);
-
-
+        log.debug("inside createEvent , evertID {}, eventType {}, capacity {}", eventID, eventType, capacity);
         log.debug("checking if there is a logged in user {}", session.isActive());
         if(!session.isActive()) {
             return shellHelper.getErrorMessage("No Logged in user, Please login");
@@ -103,65 +116,89 @@ public class EventManagerController {
 
         log.debug("checking if session user {} is a Manager", session.getUserName());
         if(!UserType.EVENT_MANAGER.equals(session.getUserType())) {
-            return shellHelper.getErrorMessage(String.format("User %s is not authorized to perform this action", session.getUserName()));
+            String msg = String.format("User %s is not authorized to perform this action", session.getUserName());
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
-        log.debug("checking session user is authorized to create passed event. username {}, eventid {}", session.getUserName(), evertID);
-        if(!session.getLocation().equals(evertID.substring(0,3))) {
-            return shellHelper.getErrorMessage(String.format("Invalid evertID, User %s is not allowed to create event %s eventid, location mismatch", session.getUserName(), evertID));
+        log.debug("checking session user is authorized to create passed event. username {}, eventid {}", session.getUserName(), eventID);
+        if(!session.getLocation().equals(eventID.substring(0,3))) {
+            String msg =String.format("Invalid evertID, User %s is not allowed to create event %s eventid, location mismatch", session.getUserName(), eventID);
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
-        log.debug("checking evertID to be in valid format {} {}", usernamePattern, evertID);
+        log.debug("checking evertID to be in valid format {} {}", usernamePattern, eventID);
         Pattern pattern = Pattern.compile(eventIDPattern);
-        if(!pattern.matcher(evertID).matches()) {
-            return shellHelper.getErrorMessage("Invalid evertID");
+        if(!pattern.matcher(eventID).matches()) {
+            String msg = "Invalid evertID";
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
         Integer capacityValue = Integer.parseInt(capacity);
         log.debug("checking capacity value {}", capacity);
         if(capacityValue <= 0) {
-            return shellHelper.getErrorMessage(String.format("Invalid capacity value %s", capacity));
+            String msg =String.format("Invalid capacity value %s", capacity);
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
         log.debug("checking event type {}", eventType);
         if(EventType.get(eventType) == null) {
-            return shellHelper.getErrorMessage(String.format("Invalid event type %s", eventType));
+            String msg =String.format("Invalid event type %s", eventType);
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
-        String dateStr = evertID.substring(4);
+        String dateStr = eventID.substring(4);
         log.debug("checking event Date {}", dateStr);
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(eventDatePattern);
             simpleDateFormat.parse(dateStr);
         } catch (ParseException e) {
-            return shellHelper.getErrorMessage(String.format("Invalid event Date %s", dateStr));
+            String msg =String.format("Invalid event Date %s", dateStr);
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
-        char timeSlot = evertID.charAt(3);
+        char timeSlot = eventID.charAt(3);
         log.debug("checking event Time Slot {}", timeSlot);
         if(EventTimeSlot.get(Character.toString(timeSlot)) == null) {
-            return shellHelper.getErrorMessage(String.format("Invalid Event time slot %s", timeSlot));
+            String msg =String.format("Invalid Event time slot %s", timeSlot);
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
         String result = null;
         try {
             EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
             EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-            result = shellHelper.getSuccessMessage(eventManagementService.addEvent(evertID, EventType.get(eventType), capacityValue));
+            result = shellHelper.getSuccessMessage(eventManagementService.addEvent(eventID, EventType.get(eventType), capacityValue));
         } catch (EventManagementServiceException e) {
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]", eventID, eventType, capacity, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         } catch (RemoteException e) {
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]", eventID, eventType, capacity, e.getMessage()));
+            return shellHelper.getErrorMessage(e.getMessage());
+        } catch (BeansException e) {
+            session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]", eventID, eventType, capacity, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }
+        session.getUserActivityLogger().log(String.format("action [createEvent], evertID [%s], eventType [%s], capacity [%s], result [%s]", eventID, eventType, capacity, result));
         return result;
     }
 
+    /**
+     *
+     * @param eventID
+     * @param eventType
+     * @return
+     */
     @ShellMethod("Remove Event")
-    public String removeEvent(@ShellOption(value = { "-id" }) String evertID,
+    public String removeEvent(@ShellOption(value = { "-id" }) String eventID,
                               @ShellOption(value = { "-type" }) String eventType) {
-
-        log.debug("inside removeEvent , evertID {}, eventType {}", evertID, eventType);
-
+        log.debug("inside removeEvent , evertID {}, eventType {}", eventID, eventType);
         log.debug("checking if there is a logged in user {}", session.isActive());
         if(!session.isActive()) {
             return shellHelper.getErrorMessage("No Logged in user, Please login");
@@ -169,45 +206,61 @@ public class EventManagerController {
 
         log.debug("checking if session user {} is a Manager", session.getUserName());
         if(!UserType.EVENT_MANAGER.equals(session.getUserType())) {
-            return shellHelper.getErrorMessage(String.format("User %s is not authorized to perform this action", session.getUserName()));
+            String msg = String.format("User %s is not authorized to perform this action", session.getUserName());
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
-        log.debug("checking evertID to be in valid format {} {}", usernamePattern, evertID);
+        log.debug("checking evertID to be in valid format {} {}", usernamePattern, eventID);
         Pattern pattern = Pattern.compile(eventIDPattern);
-        if(!pattern.matcher(evertID).matches()) {
-            return shellHelper.getErrorMessage("Invalid evertID");
+        if(!pattern.matcher(eventID).matches()) {
+            String msg = "Invalid evertID";
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
         log.debug("checking event type {}", eventType);
         if(EventType.get(eventType) == null) {
-            return shellHelper.getErrorMessage(String.format("Invalid event type %s", eventType));
+            String msg = String.format("Invalid event type %s", eventType);
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
-        String dateStr = evertID.substring(4);
+        String dateStr = eventID.substring(4);
         log.debug("checking event Date {}", dateStr);
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(eventDatePattern);
             simpleDateFormat.parse(dateStr);
         } catch (ParseException e) {
-            return shellHelper.getErrorMessage(String.format("Invalid event Date %s", dateStr));
+            String msg = String.format("Invalid event Date %s", dateStr);
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
-        char timeSlot = evertID.charAt(3);
+        char timeSlot = eventID.charAt(3);
         log.debug("checking event Time Slot {}", timeSlot);
         if(EventTimeSlot.get(Character.toString(timeSlot)) == null) {
-            return shellHelper.getErrorMessage(String.format("Invalid Event time slot %s", timeSlot));
+            String msg = String.format("Invalid Event time slot %s", timeSlot);
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
         String result = null;
         try {
             EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
             EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-            result = shellHelper.getSuccessMessage(eventManagementService.removeEvent(evertID, EventType.get(eventType)));
+            result = shellHelper.getSuccessMessage(eventManagementService.removeEvent(eventID, EventType.get(eventType)));
         } catch (EventManagementServiceException e) {
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]", eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         } catch (RemoteException e) {
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]", eventID, eventType, e.getMessage()));
+            return shellHelper.getErrorMessage(e.getMessage());
+        } catch (BeansException e) {
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]", eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }
+        session.getUserActivityLogger().log(String.format("action [removeEvent], evertID [%s], eventType [%s], result [%s]", eventID, eventType, result));
         return result;
 
     }
@@ -220,9 +273,7 @@ public class EventManagerController {
      */
     @ShellMethod("List Event Availability")
     public String listEventAvailability(@ShellOption(value = { "-type" }) String eventType) {
-
         log.debug("inside listEventAvailability eventType {}", eventType);
-
         log.debug("checking if there is a logged in user {}", session.isActive());
         if(!session.isActive()) {
             return shellHelper.getErrorMessage("No Logged in user, Please login");
@@ -230,7 +281,16 @@ public class EventManagerController {
 
         log.debug("checking if session user {} is a Manager", session.getUserName());
         if(!UserType.EVENT_MANAGER.equals(session.getUserType())) {
-            return shellHelper.getErrorMessage(String.format("User %s is not authorized to perform this action", session.getUserName()));
+            String msg = String.format("User %s is not authorized to perform this action", session.getUserName());
+            session.getUserActivityLogger().log(String.format("action [listEventAvailability], param eventType [%s], error [%s]", eventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        log.debug("checking event type {}", eventType);
+        if(EventType.get(eventType) == null) {
+            String msg = String.format("Invalid event type %s", eventType);
+            session.getUserActivityLogger().log(String.format("action [listEventAvailability], param eventType [%s], error [%s]", eventType, msg));
+            return shellHelper.getErrorMessage(msg);
         }
 
         String result = null;
@@ -239,10 +299,16 @@ public class EventManagerController {
             EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
             result = shellHelper.getSuccessMessage(eventManagementService.listEventAvailability(EventType.get(eventType)));
         } catch (EventManagementServiceException e) {
+            session.getUserActivityLogger().log(String.format("action [listEventAvailability], param eventType [%s], error [%s]", eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         } catch (RemoteException e) {
+            session.getUserActivityLogger().log(String.format("action [listEventAvailability], param eventType [%s], error [%s]", eventType, e.getMessage()));
+            return shellHelper.getErrorMessage(e.getMessage());
+        } catch (BeansException e) {
+            session.getUserActivityLogger().log(String.format("action [listEventAvailability], param eventType [%s], error [%s]", eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }
+        session.getUserActivityLogger().log(String.format("action [listEventAvailability], eventType [%s], result [%s]", eventType, result));
         return result;
     }
 }

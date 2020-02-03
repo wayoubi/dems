@@ -1,5 +1,6 @@
 package ca.concordia.ginacody.comp6231.client.cache;
 
+import ca.concordia.ginacody.comp6231.client.log.UserActivityLogger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,11 @@ public class Session {
     /**
      *
      */
+    private UserActivityLogger userActivityLogger;
+
+    /**
+     *
+     */
     public Session(){
         this.setActive(false);
     }
@@ -44,6 +50,10 @@ public class Session {
      * @param userName
      */
     public void init(String userName) {
+        if(this.isActive()) {
+            this.getUserActivityLogger().release();
+        }
+        this.setUserActivityLogger(new UserActivityLogger(userName));
         this.setUserName(userName);
         this.setLocation(this.userName.substring(0, 3));
         this.setUserType(UserType.get(Character.toString(this.userName.charAt(3))));
@@ -80,6 +90,22 @@ public class Session {
      */
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    /**
+     *
+     * @param userActivityLogger
+     */
+    public void setUserActivityLogger(UserActivityLogger userActivityLogger) {
+        this.userActivityLogger = userActivityLogger;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public UserActivityLogger getUserActivityLogger() {
+        return userActivityLogger;
     }
 
     /**

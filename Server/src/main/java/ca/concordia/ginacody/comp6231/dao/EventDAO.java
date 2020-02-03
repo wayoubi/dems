@@ -7,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventDAO {
 
@@ -30,6 +28,7 @@ public class EventDAO {
      * @throws EventManagementServiceException
      */
     public String addEvent(EventVO eventVO) throws EventManagementServiceException {
+        AtomicBoolean newEvent = new AtomicBoolean(true);
         Database.getInstance().getEvents().computeIfPresent(eventVO.getEventType(), (type, map) -> {
             map.computeIfPresent(eventVO.getId(), (id, event) -> {
                 if(event.getNumberOfAttendees() > eventVO.getCapacity()) {
@@ -37,6 +36,8 @@ public class EventDAO {
                     throw new EventManagementServiceException(String.format("Event %s cannot be updated, new capacity is less than already registered users", eventVO.getId()));
                 } else if(event.getNumberOfAttendees() <= eventVO.getCapacity()){
                     event.setCapacity(eventVO.getCapacity());
+                    newEvent.set(false);
+                    LOGGER.info("Event {} updated successfully", eventVO.getId());
                 }
                 return event;
             });
@@ -47,8 +48,12 @@ public class EventDAO {
             return map;
         });
         Database.getInstance().getEvents().computeIfAbsent(eventVO.getEventType(), eventType -> new HashMap<>()).putIfAbsent(eventVO.getId(), eventVO);
-        LOGGER.info("Event {} added/updated successfully", eventVO.getId());
-        return String.format("Event %s added/updated successfully", eventVO.getId());
+        String result = String.format("Event %s updated successfully", eventVO.getId());
+        if (newEvent.get()) {
+            LOGGER.info("Event {} added successfully", eventVO.getId());
+            result = String.format("Event %s added successfully", eventVO.getId());
+        }
+        return result;
     }
 
      /**
@@ -100,8 +105,7 @@ public class EventDAO {
             }
             stringEventVOMap.values().stream().forEach(eventVO -> {
                 stringBuilder.append(eventVO.getId());
-                stringBuilder.append(String.format(" available places [%s]",(eventVO.getCapacity()-eventVO.getNumberOfAttendees())));
-                stringBuilder.append(System.lineSeparator());
+                stringBuilder.append(String.format(" available places [%s] %s",(eventVO.getCapacity()-eventVO.getNumberOfAttendees()), System.lineSeparator()));
             });
             return stringEventVOMap;
         });
