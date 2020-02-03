@@ -73,6 +73,7 @@ public class EventManagementServiceImpl extends UnicastRemoteObject implements E
                 }
                 LOGGER.info("Adding response - Listing Available Events from {}, EventType {}", location, eventType);
                 stringBuilder.append(requestProcessor.getReplyMessage());
+                stringBuilder.append(System.lineSeparator());
             }
         });
         return stringBuilder.toString();

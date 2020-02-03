@@ -108,7 +108,7 @@ public class EventManagerController {
                               @ShellOption(value = { "-type" }) String eventType,
                               @ShellOption(value = { "-capacity" }) String capacity
                               ) {
-        log.debug("inside createEvent , evertID {}, eventType {}, capacity {}", eventID, eventType, capacity);
+        log.debug("inside createEvent , eventID {}, eventType {}, capacity {}", eventID, eventType, capacity);
         log.debug("checking if there is a logged in user {}", session.isActive());
         if(!session.isActive()) {
             return shellHelper.getErrorMessage("No Logged in user, Please login");
@@ -123,15 +123,15 @@ public class EventManagerController {
 
         log.debug("checking session user is authorized to create passed event. username {}, eventid {}", session.getUserName(), eventID);
         if(!session.getLocation().equals(eventID.substring(0,3))) {
-            String msg =String.format("Invalid evertID, User %s is not allowed to create event %s eventid, location mismatch", session.getUserName(), eventID);
+            String msg =String.format("Invalid eventID, User %s is not allowed to create event %s eventid, location mismatch", session.getUserName(), eventID);
             session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
             return shellHelper.getErrorMessage(msg);
         }
 
-        log.debug("checking evertID to be in valid format {} {}", usernamePattern, eventID);
+        log.debug("checking eventID to be in valid format {} {}", usernamePattern, eventID);
         Pattern pattern = Pattern.compile(eventIDPattern);
         if(!pattern.matcher(eventID).matches()) {
-            String msg = "Invalid evertID";
+            String msg = "Invalid eventID";
             session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, capacity, msg));
             return shellHelper.getErrorMessage(msg);
         }
@@ -185,7 +185,7 @@ public class EventManagerController {
             session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]", eventID, eventType, capacity, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }
-        session.getUserActivityLogger().log(String.format("action [createEvent], evertID [%s], eventType [%s], capacity [%s], result [%s]", eventID, eventType, capacity, result));
+        session.getUserActivityLogger().log(String.format("action [createEvent], eventID [%s], eventType [%s], capacity [%s], result [%s]", eventID, eventType, capacity, result));
         return result;
     }
 
@@ -198,7 +198,7 @@ public class EventManagerController {
     @ShellMethod("Remove Event")
     public String removeEvent(@ShellOption(value = { "-id" }) String eventID,
                               @ShellOption(value = { "-type" }) String eventType) {
-        log.debug("inside removeEvent , evertID {}, eventType {}", eventID, eventType);
+        log.debug("inside removeEvent , eventID {}, eventType {}", eventID, eventType);
         log.debug("checking if there is a logged in user {}", session.isActive());
         if(!session.isActive()) {
             return shellHelper.getErrorMessage("No Logged in user, Please login");
@@ -211,10 +211,10 @@ public class EventManagerController {
             return shellHelper.getErrorMessage(msg);
         }
 
-        log.debug("checking evertID to be in valid format {} {}", usernamePattern, eventID);
+        log.debug("checking eventID to be in valid format {} {}", usernamePattern, eventID);
         Pattern pattern = Pattern.compile(eventIDPattern);
         if(!pattern.matcher(eventID).matches()) {
-            String msg = "Invalid evertID";
+            String msg = "Invalid eventID";
             session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
             return shellHelper.getErrorMessage(msg);
         }
@@ -260,7 +260,7 @@ public class EventManagerController {
             session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]", eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }
-        session.getUserActivityLogger().log(String.format("action [removeEvent], evertID [%s], eventType [%s], result [%s]", eventID, eventType, result));
+        session.getUserActivityLogger().log(String.format("action [removeEvent], eventID [%s], eventType [%s], result [%s]", eventID, eventType, result));
         return result;
 
     }
