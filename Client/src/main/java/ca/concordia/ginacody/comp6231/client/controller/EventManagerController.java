@@ -128,7 +128,7 @@ public class EventManagerController {
             return shellHelper.getErrorMessage(msg);
         }
 
-        log.debug("checking eventID to be in valid format {} {}", usernamePattern, eventID);
+        log.debug("checking eventID to be in valid format {} {}", eventIDPattern, eventID);
         Pattern pattern = Pattern.compile(eventIDPattern);
         if(!pattern.matcher(eventID).matches()) {
             String msg = "Invalid eventID";

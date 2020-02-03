@@ -59,8 +59,6 @@ public class RequestProcessor extends Thread {
             byte[] buffer = new byte[1000];
             DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
             aSocket.receive(reply);
-
-            //replyMessage = new String(reply.getData()).substring(0, reply.getData().length).replaceAll("\u0000.*", "");
             replyMessage = new String(reply.getData()).substring(0, reply.getData().length).replaceAll("[^\\x00-\\x7F]", "").replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "").replaceAll("\\p{C}", "");
         } catch (SocketException e) {
             this.replyMessage = String.format("Error while communicating with remote server %s, error is $s%s", this.remoteLocation, e.getMessage(), System.lineSeparator());

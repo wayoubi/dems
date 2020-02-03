@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class EventVO implements Serializable {
@@ -74,7 +75,7 @@ public class EventVO implements Serializable {
         char timeSlot = id.charAt(3);
         this.setEventTimeSlot(EventTimeSlot.get(Character.toString(timeSlot)));
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("DDMMYY");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyy");
             this.setDate(simpleDateFormat.parse(id.substring(4)));
         } catch (ParseException e) {
             throw new EventManagementServiceException(e.getMessage());
@@ -218,5 +219,23 @@ public class EventVO implements Serializable {
     @Override
     public String toString() {
         return "Event {" + "id='" + id + '\'' + ", eventType=" + eventType + ", capacity=" + capacity + ", numberOfAttendees=" + numberOfAttendees + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EventVO)) return false;
+        EventVO eventVO = (EventVO) o;
+        return  getWeekIndex() == eventVO.getWeekIndex() &&
+                getDayIndex() == eventVO.getDayIndex() &&
+                Objects.equals(getId(), eventVO.getId()) &&
+                getEventType() == eventVO.getEventType() &&
+                getEventTimeSlot() == eventVO.getEventTimeSlot() &&
+                Objects.equals(getDate(), eventVO.getDate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getEventType(), getEventTimeSlot(), getDate(), getWeekIndex(), getDayIndex());
     }
 }

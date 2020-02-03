@@ -51,15 +51,13 @@ public class ResponseProcessor extends Thread {
         StringTokenizer stringTokenizer = new StringTokenizer(commandString, ":");
         String remoteServer = stringTokenizer.nextToken();
         String command = stringTokenizer.nextToken();
-        String subCommand = stringTokenizer.nextToken();
-        LOGGER.info("Processing request sent from {} server  to {} for {}", remoteServer, command, subCommand);
 
+        LOGGER.info("Processing request sent from {} server to {}", remoteServer, command);
         StringBuilder stringBuilder = new StringBuilder();
-        //stringBuilder.append(String.format("Response from Server %s", Configuration.SERVER_LOCATION));
-        stringBuilder.append(System.lineSeparator());
 
         if("listEventAvailability".equals(command)) {
-            Optional<EventType> optional = Optional.ofNullable(EventType.get(subCommand));
+            String eventType = stringTokenizer.nextToken();
+            Optional<EventType> optional = Optional.ofNullable(EventType.get(eventType));
             if(optional.isPresent()) {
                 EventManagementBusinessFacade eventManagementBusinessFacade = new EventManagementBusinessFacade();
                 try {
@@ -68,19 +66,32 @@ public class ResponseProcessor extends Thread {
                     stringBuilder.append(String.format("%s from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
                 }
             }
-        } else {
-            LOGGER.warn("Unsupported request {} {}", this.getRequest().getAddress(), this.getRequest().getPort(), command, subCommand);
+        } else if("bookEvent".equals(command)) {
+            String customerID = stringTokenizer.nextToken();
+            String eventID = stringTokenizer.nextToken();
+            String eventType = stringTokenizer.nextToken();
+            Optional<EventType> optional = Optional.ofNullable(EventType.get(eventType));
+            if(optional.isPresent()) {
+               EventManagementBusinessFacade eventManagementBusinessFacade = new EventManagementBusinessFacade();
+                try {
+                    stringBuilder.append(eventManagementBusinessFacade.bookEvent(customerID, eventID, optional.get()));
+                } catch(EventManagementServiceException e) {
+                    stringBuilder.append(String.format("%s from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
+                }
+            }
+        } else{
+            LOGGER.warn("Unsupported request {}", this.getRequest().getAddress(), this.getRequest().getPort(), command);
             stringBuilder.append(String.format("Unsupported Operation %s", command)) ;
         }
+        //Send reply back to Client "Request Processor"
         try {
             DatagramPacket reply = new DatagramPacket(stringBuilder.toString().getBytes(), stringBuilder.toString().getBytes().length, request.getAddress(), request.getPort());
-            LOGGER.info("sending response back to remote server {} to {} {} ", remoteServer, command, subCommand);
+            LOGGER.info("sending response back to remote server {} to {} ", remoteServer, command);
             this.getSocket().send(reply);
         } catch (IOException ioex) {
             LOGGER.error("{} caused by {}", ioex.getMessage(), ioex.getCause().getMessage());
         }
     }
-
 
     /**
      *

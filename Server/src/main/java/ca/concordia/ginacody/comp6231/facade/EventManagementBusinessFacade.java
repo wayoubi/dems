@@ -1,5 +1,6 @@
 package ca.concordia.ginacody.comp6231.facade;
 
+import ca.concordia.ginacody.comp6231.dao.BookingDAO;
 import ca.concordia.ginacody.comp6231.dao.Database;
 import ca.concordia.ginacody.comp6231.dao.EventDAO;
 import ca.concordia.ginacody.comp6231.enums.EventType;
@@ -45,5 +46,28 @@ public class EventManagementBusinessFacade implements EventManagementService {
         LOGGER.info("Listing Available Events, EventType {}", eventType);
         EventDAO eventDAO = new EventDAO();
         return eventDAO.selectAllEvents(eventType);
+    }
+
+    @Override
+    public String bookEvent(String customerID, String eventID, EventType eventType) throws EventManagementServiceException {
+        LOGGER.info("Booking Event, customerID {}, eventID {}, eventType {}", customerID, eventID, eventType);
+        EventVO eventVO = new EventVO(eventID, eventType);
+        BookingDAO bookingDAO = new BookingDAO();
+        return bookingDAO.addBooking(customerID, eventVO);
+    }
+
+    @Override
+    public String getBookingSchedule(String customerID) throws EventManagementServiceException {
+        LOGGER.info("Listing Booking Schedule, customerID {}", customerID);
+        BookingDAO bookingDAO = new BookingDAO();
+        return bookingDAO.selectAllBookings(customerID);
+    }
+
+    @Override
+    public String cancelEvent(String customerID, String eventID, EventType eventType) throws EventManagementServiceException {
+        LOGGER.info("Cancel Event, customerID {}, eventID {}, eventType{}", customerID, eventID, eventType);
+        EventVO eventVO = new EventVO(eventID, eventType);
+        BookingDAO bookingDAO = new BookingDAO();
+        return bookingDAO.removeBooking(customerID, eventVO);
     }
 }

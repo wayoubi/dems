@@ -28,7 +28,12 @@ public class Database {
     /**
      *
      */
-    private Map<String, List<String>> userRecords;
+    private Map<String, List<EventVO>> userRecords;
+
+    /**
+     *
+     */
+    private Map<EventVO, List<String>> eventRecords;
 
     /**
      *
@@ -36,6 +41,7 @@ public class Database {
     private Database() {
         this.setEvents(new ConcurrentHashMap<>());
         this.setUserRecords(new ConcurrentHashMap<>());
+        this.setEventRecords(new ConcurrentHashMap<>());
     }
 
     /**
@@ -61,8 +67,24 @@ public class Database {
      *
      * @return
      */
-    Map<String, List<String>> getUserRecords() {
+    Map<String, List<EventVO>> getUserRecords() {
         return userRecords;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Map<EventVO, List<String>> getEventRecords() {
+        return eventRecords;
+    }
+
+    /**
+     *
+     * @param eventRecords
+     */
+    public void setEventRecords(Map<EventVO, List<String>> eventRecords) {
+        this.eventRecords = eventRecords;
     }
 
     /**
@@ -77,7 +99,7 @@ public class Database {
      *
      * @param userRecords
      */
-    private void setUserRecords(Map<String, List<String>> userRecords) {
+    private void setUserRecords(Map<String, List<EventVO>> userRecords) {
         this.userRecords = userRecords;
     }
 }
