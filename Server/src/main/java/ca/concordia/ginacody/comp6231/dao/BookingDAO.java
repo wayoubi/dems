@@ -1,16 +1,25 @@
 package ca.concordia.ginacody.comp6231.dao;
 
+import ca.concordia.ginacody.comp6231.config.Configuration;
 import ca.concordia.ginacody.comp6231.enums.EventType;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
+import ca.concordia.ginacody.comp6231.services.EventManagementService;
 import ca.concordia.ginacody.comp6231.vo.EventVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class BookingDAO {
+
+    /**
+     *
+     * 
+     */
+    private static Object mutux = new Object();
 
     /**
      *
@@ -43,7 +52,7 @@ public class BookingDAO {
             });
             return map;
         });
-        synchronized(this) {
+        synchronized(BookingDAO.mutux) {
             Database.getInstance().getEvents().computeIfPresent(eventVO.getEventType(), (type, map) -> {
                 map.computeIfPresent(eventVO.getId(), (eventId, eventVO1) -> {
 
@@ -91,8 +100,19 @@ public class BookingDAO {
      * @throws EventManagementServiceException
      */
     public String selectAllBookings(String customerID) throws EventManagementServiceException {
-        return null;
+        StringBuilder stringBuilder = new StringBuilder();
+        Database.getInstance().getUserRecords().computeIfAbsent(customerID, s -> {
+            throw new EventManagementServiceException(String.format("No bookings for %s on %s database", s, Configuration.SERVER_LOCATION));
+        });
+        Database.getInstance().getUserRecords().computeIfPresent(customerID, (s, eventVOS) -> {
+            eventVOS.stream().sorted(Comparator.comparing(EventVO::getDate)).forEach(eventVO -> {
+                stringBuilder.append(String.format("%s %s on %s at %s is confirmed$$", eventVO.getEventType(), eventVO.getId(), eventVO.getDate(), eventVO.getEventTimeSlot()));
+            });
+            return eventVOS;
+        });
+        return stringBuilder.toString();
     }
+
 
     /**
      *
@@ -103,5 +123,20 @@ public class BookingDAO {
      */
     public String removeBooking(String customerID, EventVO eventVO) throws EventManagementServiceException {
         return null;
+    }
+
+    /**
+     *
+     * @param customerID
+     * @param eventVO
+     * @return
+     */
+    public int countBookingInSameWeek(String customerID, EventVO eventVO) {
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        Database.getInstance().getUserRecords().computeIfPresent(customerID, (s, eventVOS) -> {
+            atomicInteger.set(eventVOS.stream().filter(eventVO1 -> eventVO.getWeekIndex() == eventVO1.getWeekIndex()).collect(Collectors.toList()).size());
+            return eventVOS;
+        });
+        return atomicInteger.get();
     }
 }

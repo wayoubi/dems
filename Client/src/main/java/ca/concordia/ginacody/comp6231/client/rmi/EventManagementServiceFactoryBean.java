@@ -7,7 +7,6 @@ import org.springframework.remoting.rmi.RmiProxyFactoryBean;
 public class EventManagementServiceFactoryBean extends RmiProxyFactoryBean {
 
     public EventManagementServiceFactoryBean(Session session) {
-        //this.setServiceUrl("rmi://localhost:1099/EventManagementService"+sessionUser.getLocation());
         this.setServiceUrl(session.getServiceURL()+session.getLocation());
         this.setServiceInterface(EventManagementService.class);
     }

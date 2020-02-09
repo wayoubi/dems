@@ -1,6 +1,5 @@
 package ca.concordia.ginacody.comp6231.processors;
 
-import ca.concordia.ginacody.comp6231.UDPServer;
 import ca.concordia.ginacody.comp6231.config.Configuration;
 import ca.concordia.ginacody.comp6231.enums.EventType;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
@@ -63,7 +62,7 @@ public class ResponseProcessor extends Thread {
                 try {
                     stringBuilder.append(eventManagementBusinessFacade.listEventAvailability(optional.get()));
                 } catch(EventManagementServiceException e) {
-                    stringBuilder.append(String.format("%s from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
+                    stringBuilder.append(String.format("%s, Response from server %s%s", e.getMessage(), Configuration.SERVER_LOCATION,System.lineSeparator()));
                 }
             }
         } else if("bookEvent".equals(command)) {
@@ -76,12 +75,33 @@ public class ResponseProcessor extends Thread {
                 try {
                     stringBuilder.append(eventManagementBusinessFacade.bookEvent(customerID, eventID, optional.get()));
                 } catch(EventManagementServiceException e) {
-                    stringBuilder.append(String.format("%s from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
+                    stringBuilder.append(String.format("%s, Response from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION,System.lineSeparator()));
                 }
             }
-        } else{
+        } else if("getBookingCount".equals(command)) {
+            String customerID = stringTokenizer.nextToken();
+            String eventID = stringTokenizer.nextToken();
+            String eventType = stringTokenizer.nextToken();
+            Optional<EventType> optional = Optional.ofNullable(EventType.get(eventType));
+            if(optional.isPresent()) {
+                EventManagementBusinessFacade eventManagementBusinessFacade = new EventManagementBusinessFacade();
+                try {
+                    stringBuilder.append(eventManagementBusinessFacade.getBookingCountInSameWeek(customerID, eventID, optional.get()));
+                } catch(EventManagementServiceException e) {
+                    stringBuilder.append(String.format("%s, Response from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION,System.lineSeparator()));
+                }
+            }
+        } else if("getBookingSchedule".equals(command)) {
+            String customerID = stringTokenizer.nextToken();
+            EventManagementBusinessFacade eventManagementBusinessFacade = new EventManagementBusinessFacade();
+            try {
+                stringBuilder.append(eventManagementBusinessFacade.getBookingSchedule(customerID));
+            } catch(EventManagementServiceException e) {
+                stringBuilder.append(String.format("%s, Response from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
+            }
+        } else {
             LOGGER.warn("Unsupported request {}", this.getRequest().getAddress(), this.getRequest().getPort(), command);
-            stringBuilder.append(String.format("Unsupported Operation %s", command)) ;
+            stringBuilder.append(String.format("Unsupported Operation [%s], Response from remote server %s%s", command, Configuration.SERVER_LOCATION, System.lineSeparator())) ;
         }
         //Send reply back to Client "Request Processor"
         try {

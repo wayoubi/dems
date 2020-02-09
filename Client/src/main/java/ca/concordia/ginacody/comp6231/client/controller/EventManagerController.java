@@ -207,7 +207,14 @@ public class EventManagerController {
         log.debug("checking if session user {} is a Manager", session.getUserName());
         if(!UserType.EVENT_MANAGER.equals(session.getUserType())) {
             String msg = String.format("User %s is not authorized to perform this action", session.getUserName());
-            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s] error [%s]",eventID, eventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        log.debug("checking if removed event is local eventID {} current location {}", eventID, session.getLocation());
+        if(!eventID.startsWith(session.getLocation())) {
+            String msg = String.format("User %s is not authorized to remove remote events eventID %s current location %s", session.getUserName(), eventID, session.getLocation());
+            session.getUserActivityLogger().log(String.format("User [%s] is not authorized to remove remote events eventID [%s] current location [%s]",eventID, eventType, session.getLocation()));
             return shellHelper.getErrorMessage(msg);
         }
 
@@ -215,14 +222,14 @@ public class EventManagerController {
         Pattern pattern = Pattern.compile(eventIDPattern);
         if(!pattern.matcher(eventID).matches()) {
             String msg = "Invalid eventID";
-            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]",eventID, eventType, msg));
             return shellHelper.getErrorMessage(msg);
         }
 
         log.debug("checking event type {}", eventType);
         if(EventType.get(eventType) == null) {
             String msg = String.format("Invalid event type %s", eventType);
-            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]",eventID, eventType, msg));
             return shellHelper.getErrorMessage(msg);
         }
 
@@ -233,7 +240,7 @@ public class EventManagerController {
             simpleDateFormat.parse(dateStr);
         } catch (ParseException e) {
             String msg = String.format("Invalid event Date %s", dateStr);
-            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]",eventID, eventType, msg));
             return shellHelper.getErrorMessage(msg);
         }
 
@@ -241,7 +248,7 @@ public class EventManagerController {
         log.debug("checking event Time Slot {}", timeSlot);
         if(EventTimeSlot.get(Character.toString(timeSlot)) == null) {
             String msg = String.format("Invalid Event time slot %s", timeSlot);
-            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]",eventID, eventType, msg));
+            session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]",eventID, eventType, msg));
             return shellHelper.getErrorMessage(msg);
         }
 

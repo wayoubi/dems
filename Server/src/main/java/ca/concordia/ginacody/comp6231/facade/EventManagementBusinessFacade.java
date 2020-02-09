@@ -1,7 +1,6 @@
 package ca.concordia.ginacody.comp6231.facade;
 
 import ca.concordia.ginacody.comp6231.dao.BookingDAO;
-import ca.concordia.ginacody.comp6231.dao.Database;
 import ca.concordia.ginacody.comp6231.dao.EventDAO;
 import ca.concordia.ginacody.comp6231.enums.EventType;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
@@ -9,10 +8,6 @@ import ca.concordia.ginacody.comp6231.services.EventManagementService;
 import ca.concordia.ginacody.comp6231.vo.EventVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.rmi.RemoteException;
-
-import static java.util.UUID.randomUUID;
 
 public class EventManagementBusinessFacade implements EventManagementService {
 
@@ -69,5 +64,21 @@ public class EventManagementBusinessFacade implements EventManagementService {
         EventVO eventVO = new EventVO(eventID, eventType);
         BookingDAO bookingDAO = new BookingDAO();
         return bookingDAO.removeBooking(customerID, eventVO);
+    }
+
+    /**
+     *
+     * Called from other servers, not exposed to RMI service
+     *
+     * @param customerID
+     * @param eventID
+     * @param eventType
+     * @return
+     */
+    public int getBookingCountInSameWeek(String customerID, String eventID, EventType eventType) {
+        LOGGER.info("Get Remote Booking Count customerID {}, eventID {}, eventType{}", customerID, eventID, eventType);
+        EventVO eventVO = new EventVO(eventID, eventType);
+        BookingDAO bookingDAO = new BookingDAO();
+        return bookingDAO.countBookingInSameWeek(customerID, eventVO);
     }
 }

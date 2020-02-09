@@ -6,6 +6,7 @@ import ca.concordia.ginacody.comp6231.vo.EventVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -74,9 +75,21 @@ public class EventDAO {
             });
             return map;
         });
+
         Database.getInstance().getEvents().computeIfPresent(eventVO.getEventType(), (type, map) -> {
             map.computeIfPresent(eventVO.getId(), (eventId, eventVO1) -> {
+                Database.getInstance().getEventRecords().computeIfPresent(eventVO1, (eventVO2, list) -> {
+                    list.stream().forEach(customerID -> {
+                        Database.getInstance().getUserRecords().computeIfPresent(customerID, (customerID0, eventVOS) -> {
+                            eventVOS.remove(eventVO2);
+                            // TODO here you need to add the user to the next event same type, same timeslot
+                            return eventVOS;
+                        });
+                    });
+                    return list;
+                });
                 LOGGER.info("Event {} will be removed", eventId);
+                Database.getInstance().getEventRecords().remove(eventVO1);
                 map.remove(eventId);
                 return null;
             });
@@ -103,9 +116,8 @@ public class EventDAO {
                 LOGGER.error("No {} Events exist, nothing will be listed", eventType1);
                 throw new EventManagementServiceException(String.format("No %s Events exist, nothing will be listed", eventType1));
             }
-            stringEventVOMap.values().stream().forEach(eventVO -> {
-                stringBuilder.append(eventVO.getId());
-                stringBuilder.append(String.format(" available places [%s] %s",(eventVO.getCapacity()-eventVO.getNumberOfAttendees()), System.lineSeparator()));
+            stringEventVOMap.values().stream().sorted(Comparator.comparing(EventVO::getDate)).forEach(eventVO -> {
+                stringBuilder.append(String.format("%s %s scheduled on %s at %s - available places [%s]$$",eventVO.getEventType(), eventVO.getId(),eventVO.getDate(), eventVO.getEventTimeSlot(), (eventVO.getCapacity()-eventVO.getNumberOfAttendees())));
             });
             return stringEventVOMap;
         });

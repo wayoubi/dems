@@ -1,0 +1,33 @@
+login -user SHEM1234
+create-event -capacity 10 -id SHEM030220 -type CONFERENCE
+create-event -capacity 10 -id SHEM040220 -type CONFERENCE
+create-event -capacity 10 -id SHEM050220 -type CONFERENCE
+create-event -capacity 10 -id SHEM060220 -type CONFERENCE
+create-event -capacity 10 -id SHEM070220 -type CONFERENCE
+
+
+create-event -capacity 10 -id SHEM100220 -type CONFERENCE
+create-event -capacity 10 -id SHEM110220 -type CONFERENCE
+create-event -capacity 10 -id SHEM120220 -type CONFERENCE
+create-event -capacity 10 -id SHEM130220 -type CONFERENCE
+create-event -capacity 10 -id SHEM140220 -type CONFERENCE
+
+
+create-event -capacity 10 -id SHEM170220 -type CONFERENCE
+create-event -capacity 10 -id SHEM180220 -type CONFERENCE
+create-event -capacity 10 -id SHEM190220 -type CONFERENCE
+create-event -capacity 10 -id SHEM200220 -type CONFERENCE
+create-event -capacity 10 -id SHEM210220 -type CONFERENCE
+
+
+book-event -customerid QUEC1000 -eventid SHEM030220 -type CONFERENCE
+book-event -customerid QUEC1000 -eventid SHEM070220 -type CONFERENCE
+book-event -customerid QUEC1000 -eventid SHEM050220 -type CONFERENCE
+book-event -customerid QUEC1000 -eventid SHEM060220 -type CONFERENCE
+book-event -customerid QUEC1000 -eventid SHEM040220 -type CONFERENCE
+
+book-event -customerid QUEC1000 -eventid SHEM170220 -type CONFERENCE
+book-event -customerid QUEC1000 -eventid SHEM180220 -type CONFERENCE
+book-event -customerid QUEC1000 -eventid SHEM210220 -type CONFERENCE
+book-event -customerid QUEC1000 -eventid SHEM190220 -type CONFERENCE
+book-event -customerid QUEC1000 -eventid SHEM200220 -type CONFERENCE

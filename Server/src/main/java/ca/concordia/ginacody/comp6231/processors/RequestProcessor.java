@@ -56,7 +56,7 @@ public class RequestProcessor extends Thread {
             int serverPort = Configuration.UDP_SERVERS_PORTS.get(this.remoteLocation);
             DatagramPacket request = new DatagramPacket(m, m.length, aHost, serverPort);
             aSocket.send(request);
-            byte[] buffer = new byte[1000];
+            byte[] buffer = new byte[2500];
             DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
             aSocket.receive(reply);
             replyMessage = new String(reply.getData()).substring(0, reply.getData().length).replaceAll("[^\\x00-\\x7F]", "").replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "").replaceAll("\\p{C}", "");

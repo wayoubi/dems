@@ -31,7 +31,7 @@ public class Database {
     private Map<String, List<EventVO>> userRecords;
 
     /**
-     *
+     * EventVO and List of custmer IDs
      */
     private Map<EventVO, List<String>> eventRecords;
 
