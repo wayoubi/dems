@@ -122,7 +122,34 @@ public class BookingDAO {
      * @throws EventManagementServiceException
      */
     public String removeBooking(String customerID, EventVO eventVO) throws EventManagementServiceException {
-        return null;
+        Database.getInstance().getUserRecords().computeIfAbsent(customerID, s -> {
+            LOGGER.error("No bookings for {} on {} database", s, Configuration.SERVER_LOCATION);
+            throw new EventManagementServiceException(String.format("No bookings for %s on %s database", s, Configuration.SERVER_LOCATION));
+        });
+        Database.getInstance().getEvents().computeIfAbsent(eventVO.getEventType(), eventType -> {
+            LOGGER.error("No {} Events exist, nothing will be canceled", eventType);
+            throw new EventManagementServiceException(String.format("No %s Events exist, nothing will be canceled", eventType));
+        });
+        synchronized(BookingDAO.mutux) {
+            Database.getInstance().getEvents().computeIfPresent(eventVO.getEventType(), (type, map) -> {
+                map.computeIfPresent(eventVO.getId(), (eventId, eventVO1) -> {
+                    LOGGER.info("Check if customer already made a booking in this event {} type {}", eventId, eventVO1.getEventType());
+                    Database.getInstance().getEventRecords().computeIfPresent(eventVO1, (eventVO2, list) -> {
+                        if(list.contains(customerID)) {
+                           list.remove(customerID);
+                           Database.getInstance().getUserRecords().get(customerID).remove(eventVO);
+                        } else {
+                            throw new EventManagementServiceException(String.format("%s is not booking Event %s %s", customerID, eventVO.getEventType(),eventVO.getId()));
+                        }
+                        return list;
+                    });
+                    eventVO1.setNumberOfAttendees(eventVO1.getNumberOfAttendees()-1);
+                    return eventVO1;
+                });
+                return map;
+            });
+        }
+        return String.format("Event %s is canceled for Customer %s successfully", eventVO.getId(), customerID);
     }
 
     /**

@@ -99,6 +99,17 @@ public class ResponseProcessor extends Thread {
             } catch(EventManagementServiceException e) {
                 stringBuilder.append(String.format("%s, Response from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
             }
+        } else if("cancelEvent".equals(command)) {
+            String customerID = stringTokenizer.nextToken();
+            String eventID = stringTokenizer.nextToken();
+            String eventType = stringTokenizer.nextToken();
+            Optional<EventType> optional = Optional.ofNullable(EventType.get(eventType));
+            EventManagementBusinessFacade eventManagementBusinessFacade = new EventManagementBusinessFacade();
+            try {
+                stringBuilder.append(eventManagementBusinessFacade.cancelEvent(customerID, eventID, optional.get()));
+            } catch (EventManagementServiceException e) {
+                stringBuilder.append(String.format("%s, Response from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
+            }
         } else {
             LOGGER.warn("Unsupported request {}", this.getRequest().getAddress(), this.getRequest().getPort(), command);
             stringBuilder.append(String.format("Unsupported Operation [%s], Response from remote server %s%s", command, Configuration.SERVER_LOCATION, System.lineSeparator())) ;

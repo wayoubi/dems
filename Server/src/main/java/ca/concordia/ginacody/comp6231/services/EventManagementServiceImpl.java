@@ -121,7 +121,7 @@ public class EventManagementServiceImpl extends UnicastRemoteObject implements E
                 requestProcessor.interrupt();
                 LOGGER.error("{} caused by {}", intex.getMessage(), intex.getCause().getMessage());
             }
-            LOGGER.info("Adding response - Listing Available Events from {}, EventType {}", eventLocation, eventType);
+            LOGGER.info("Adding response - Book Event, customerID {} eventID {} EventType {}", customerID, eventID, eventType);
             return requestProcessor.getReplyMessage();
         }
 
@@ -180,7 +180,7 @@ public class EventManagementServiceImpl extends UnicastRemoteObject implements E
             requestProcessor.interrupt();
             LOGGER.error("{} caused by {}", intex.getMessage(), intex.getCause().getMessage());
         }
-        LOGGER.info("Adding response - Listing Available Events from {}, EventType {}", eventLocation, eventType);
+        LOGGER.info("Adding response - Book Event, customerID {} eventID {} EventType {}", customerID, eventID, eventType);
         return requestProcessor.getReplyMessage();
     }
 
@@ -226,6 +226,34 @@ public class EventManagementServiceImpl extends UnicastRemoteObject implements E
 
     @Override
     public String cancelEvent(String customerID, String eventID, EventType eventType) throws RemoteException {
-        return eventManagementBusinessFacade.cancelEvent(customerID, eventID, eventType);
+
+        LOGGER.info("Canceling an Event customerID {} eventID {} EventType {}", customerID, eventID, eventType);
+
+        String eventLocation = eventID.substring(0,3);
+        LOGGER.debug("checking event location exist {}", eventLocation);
+        Optional<Integer> optional = Optional.ofNullable(Configuration.UDP_SERVERS_PORTS.get(eventLocation));
+        if(!optional.isPresent()) {
+            throw new EventManagementServiceException(String.format("Unknown event location %s", eventLocation));
+        }
+
+        LOGGER.debug("Checking if Event{} is Local from Local Client {}", eventID, Configuration.SERVER_LOCATION);
+        if(Configuration.SERVER_LOCATION.equals(eventLocation)) {
+            LOGGER.debug("Local Event eventID {} Local location {}",  customerID, eventID, Configuration.SERVER_LOCATION);
+            return eventManagementBusinessFacade.cancelEvent(customerID, eventID, eventType);
+        } else {
+            LOGGER.info("Communication with remote server {} to cancel booking customerID {} eventID {} EventType {}",eventLocation , customerID, eventID, eventType);
+            RequestProcessor requestProcessor = new RequestProcessor(eventLocation, String.format("%s:cancelEvent:%s:%s:%s:", Configuration.SERVER_LOCATION, customerID, eventID, eventType.getName()));
+            requestProcessor.setName(String.format("Request Processor - %s", requestProcessor.hashCode()));
+            requestProcessor.start();
+            try {
+                LOGGER.info("Waiting for Event Canceling from {} for customerID {} eventID {} EventType {}", eventLocation, customerID, eventID, eventType);
+                requestProcessor.join();
+            } catch (InterruptedException intex) {
+                requestProcessor.interrupt();
+                LOGGER.error("{} caused by {}", intex.getMessage(), intex.getCause().getMessage());
+            }
+            LOGGER.info("Adding response - Cancel Event, customerID {} eventID {} EventType {}", customerID, eventID, eventType);
+            return requestProcessor.getReplyMessage();
+        }
     }
 }
