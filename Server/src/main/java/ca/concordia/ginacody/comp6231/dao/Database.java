@@ -11,29 +11,29 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Database {
 
     /**
-     *
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Database.class);
-
-    /**
-     *
+     * private singleton instance
      */
     private static Database instance;
 
     /**
-     *
+     * HasMap that holds Event Types as a key, the value is a HashMap of Event IDs and Event Details
      */
     private Map<EventType, Map<String, EventVO>> events;
 
     /**
-     *
+     * HashMap that hold Customer IDs as a key, the value is a list of Event Details booked for the user
      */
     private Map<String, List<EventVO>> userRecords;
 
     /**
-     * EventVO and List of custmer IDs
+     *  HashMap that hold Event Details as a key, the value is a list of customers IDs
      */
     private Map<EventVO, List<String>> eventRecords;
+
+    /**
+     *
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(Database.class);
 
     /**
      *
