@@ -12,3 +12,9 @@ The following diagram shows the different network components and the used protoc
 On the other hand, the communication between the servers (server-server) is implemented using the UDP/IP protocol and the java.net standard JDK package. The default UDP port used is 8080. For the sake of running the system on one host (for Demo purposes) other ports are used (8081, 8082) to prevent servers trying to listen on the same port and have them fail to start. In an ideal case, only port 8080 is going to be used only.
 
 ![DEMS Network Diagram](images/network.png)
+
+# DEMS Client 
+
+The DEMS Client is a Java command line-based application that helps DEMS Manager and customers to manage events and bookings, the application uses the Spring Framework and the SpringShell project to implement interactive command line application. 
+
+![DEMS Client](images/client.png)
