@@ -50,7 +50,7 @@ public class RequestProcessor extends Thread {
         DatagramSocket aSocket = null;
         try {
             aSocket = new DatagramSocket();
-            aSocket.setSoTimeout(5000);
+            aSocket.setSoTimeout(10000);
             byte[] m = this.requestMessage.getBytes();
             InetAddress aHost = InetAddress.getByName("127.0.0.1");
             int serverPort = Configuration.UDP_SERVERS_PORTS.get(this.remoteLocation);
