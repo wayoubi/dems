@@ -1,0 +1,160 @@
+DEMO
+
+
+
+EDMS Client# login -user QUEM1000
+User QUEM1000 logged in successfully
+EDMS Client# list-event-availability -type CONFERENCE
++------------------------------------+
+| Response from Local Server QUE
++------------------------------------+
+No CONFERENCE Events exist, nothing will be listed from local server QUE
++-------------------------------------+
+| Response from Remote Server SHE
++-------------------------------------+
+CONFERENCE SHEE080620 scheduled on Mon Jun 08 00:00:00 EDT 2020 at EVENING - available places [0]
+CONFERENCE SHEE110620 scheduled on Thu Jun 11 00:00:00 EDT 2020 at EVENING - available places [1]
+
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+CONFERENCE MTLA090620 scheduled on Tue Jun 09 00:00:00 EDT 2020 at AFTERNOON - available places [1]
+
+
+EDMS Client# list-event-availability -type TRADESHOW
++------------------------------------+
+| Response from Local Server QUE
++------------------------------------+
+No TRADESHOW Events exist, nothing will be listed from local server QUE
++-------------------------------------+
+| Response from Remote Server SHE
++-------------------------------------+
+No TRADESHOW Events exist, nothing will be listed, Response from server SHE
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+TRADESHOW MTLA080620 scheduled on Mon Jun 08 00:00:00 EDT 2020 at AFTERNOON - available places [0]
+TRADESHOW MTLA150620 scheduled on Mon Jun 15 00:00:00 EDT 2020 at AFTERNOON - available places [12]
+
+
+EDMS Client# list-event-availability -type SEMINAR
++------------------------------------+
+| Response from Local Server QUE
++------------------------------------+
+No SEMINAR Events exist, nothing will be listed from local server QUE
++-------------------------------------+
+| Response from Remote Server SHE
++-------------------------------------+
+No SEMINAR Events exist, nothing will be listed, Response from server SHE
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+SEMINAR MTLE230620 scheduled on Tue Jun 23 00:00:00 EDT 2020 at EVENING - available places [1]
+
+
+EDMS Client# login -user QUEC1234
+User QUEC1234 logged in successfully
+
+EDMS Client# book-event -customerid QUEC1234 -eventid SHEE110620 -type CONFERENCE
+3 Remote events during same week are already booked for customerID QUEC1234, eventID SHEE110620, EventType CONFERENCE
+
+EDMS Client# book-event -customerid QUEC1234 -eventid MTLE230620 -type SEMINAR
+Event MTLE230620 booked for Customer QUEC1234 successfully
+
+EDMS Client# login QUEM1000
+User QUEM1000 logged in successfully
+
+EDMS Client# cancel-event -eventid MTLA090620 -customerid QUEC1234 -type CONFERENCE
+Event MTLA090620 is canceled for Customer QUEC1234 successfully
+
+EDMS Client# login -user SHEC1000
+User SHEC1000 logged in successfully
+
+EDMS Client# book-event -customerid SHEC1000 -eventid SHEE080620 -type CONFERENCE
+Event SHEE080620 is full, nothing will be booked
+
+EDMS Client# login -user MTLM1000
+User MTLM1000 logged in successfully
+
+EDMS Client# remove-event -id MTLA080620 -type TRADESHOW
+Event MTLA080620 removed successfully
+
+EDMS Client# list-bookings -customerid SHEC1000
++------------------------------------+
+| Response from Local Server MTL
++------------------------------------+
+No bookings for SHEC1000 on MTL database, Response from local server MTL
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+No bookings for SHEC1000 on QUE database, Response from remote server QUE
++-------------------------------------+
+| Response from Remote Server SHE
++-------------------------------------+
+No bookings for SHEC1000 on SHE database, Response from remote server SHE
+
+EDMS Client# list-bookings -customerid QUEC1234
++------------------------------------+
+| Response from Local Server MTL
++------------------------------------+
+TRADESHOW MTLA150620 on Mon Jun 15 00:00:00 EDT 2020 at AFTERNOON is confirmed
+SEMINAR MTLE230620 on Tue Jun 23 00:00:00 EDT 2020 at EVENING is confirmed
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+No bookings for QUEC1234 on QUE database, Response from remote server QUE
++-------------------------------------+
+| Response from Remote Server SHE
++-------------------------------------+
+CONFERENCE SHEE080620 on Mon Jun 08 00:00:00 EDT 2020 at EVENING is confirmed
+
+EDMS Client# login -user SHEM1000
+User SHEM1000 logged in successfully
+
+EDMS Client# list-event-availability -type CONFERENCE
++------------------------------------+
+| Response from Local Server SHE
++------------------------------------+
+CONFERENCE SHEE080620 scheduled on Mon Jun 08 00:00:00 EDT 2020 at EVENING - available places [0]
+CONFERENCE SHEE110620 scheduled on Thu Jun 11 00:00:00 EDT 2020 at EVENING - available places [1]
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+No CONFERENCE Events exist, nothing will be listed, Response from server QUE
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+CONFERENCE MTLA090620 scheduled on Tue Jun 09 00:00:00 EDT 2020 at AFTERNOON - available places [2]
+
+
+EDMS Client# list-event-availability -type TRADESHOW
++------------------------------------+
+| Response from Local Server SHE
++------------------------------------+
+No TRADESHOW Events exist, nothing will be listed from local server SHE
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+No TRADESHOW Events exist, nothing will be listed, Response from server QUE
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+TRADESHOW MTLA150620 scheduled on Mon Jun 15 00:00:00 EDT 2020 at AFTERNOON - available places [10]
+
+
+EDMS Client# list-event-availability -type SEMINAR
++------------------------------------+
+| Response from Local Server SHE
++------------------------------------+
+No SEMINAR Events exist, nothing will be listed from local server SHE
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+No SEMINAR Events exist, nothing will be listed, Response from server QUE
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+SEMINAR MTLE230620 scheduled on Tue Jun 23 00:00:00 EDT 2020 at EVENING - available places [0]
+
+
+EDMS Client#

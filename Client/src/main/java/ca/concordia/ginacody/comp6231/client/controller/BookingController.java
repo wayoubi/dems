@@ -2,6 +2,7 @@ package ca.concordia.ginacody.comp6231.client.controller;
 
 import ca.concordia.ginacody.comp6231.client.cache.Session;
 import ca.concordia.ginacody.comp6231.client.cache.UserType;
+import ca.concordia.ginacody.comp6231.client.corba.EventManagementServiceCorbaBean;
 import ca.concordia.ginacody.comp6231.client.rmi.EventManagementServiceFactoryBean;
 import ca.concordia.ginacody.comp6231.client.shell.ShellHelper;
 import ca.concordia.ginacody.comp6231.enums.EventTimeSlot;
@@ -19,7 +20,6 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
-import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
@@ -32,6 +32,9 @@ public class BookingController {
      */
     private static Logger log = LoggerFactory.getLogger(BookingController.class);
 
+    /**
+     *
+     */
     private ObjectProvider<EventManagementServiceFactoryBean> eventManagementServiceFactoryBeanProvider;
 
     @Autowired
@@ -42,6 +45,9 @@ public class BookingController {
 
     @Autowired
     private BeanFactory beanFactory;
+
+    @Autowired
+    EventManagementServiceCorbaBean eventManagementServiceCorbaBean;
 
     @Autowired
     public void UsingMyPrototype(ObjectProvider<EventManagementServiceFactoryBean> eventManagementServiceFactoryBeanProvider) {
@@ -135,16 +141,22 @@ public class BookingController {
 
         String result = null;
         try {
-            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
-            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-            result = shellHelper.getSuccessMessage(eventManagementService.bookEvent(customerID, eventID, EventType.get(eventType)));
+            //RMI
+//            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
+//            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
+//            result = shellHelper.getSuccessMessage(eventManagementService.bookEvent(customerID, eventID, EventType.get(eventType)));
+
+            //CORBA
+            dems.EventManagementServiceImpl eventManagementServiceImpl = eventManagementServiceCorbaBean.locateObject(session.getLocation());
+            result = shellHelper.getSuccessMessage(eventManagementServiceImpl.bookEvent(customerID, eventID, eventType));
+
         } catch (EventManagementServiceException e) {
             session.getUserActivityLogger().log(String.format("action [bookEvent], param customerID [%s], eventID [%s], eventType [%s], error [%s]", customerID, eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
-        } catch (RemoteException e) {
+        }  catch (BeansException e) {
             session.getUserActivityLogger().log(String.format("action [bookEvent], param customerID [%s], eventID [%s], eventType [%s], error [%s]", customerID, eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
-        } catch (BeansException e) {
+        } catch (Exception e) {
             session.getUserActivityLogger().log(String.format("action [bookEvent], param customerID [%s], eventID [%s], eventType [%s], error [%s]", customerID, eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }
@@ -190,16 +202,23 @@ public class BookingController {
 
         String result = null;
         try {
-            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
-            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-            result = shellHelper.getSuccessMessage(eventManagementService.getBookingSchedule(customerID));
+            //RMI
+//            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
+//            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
+//            result = shellHelper.getSuccessMessage(eventManagementService.getBookingSchedule(customerID));
+
+
+            //CORBA
+            dems.EventManagementServiceImpl eventManagementServiceImpl = eventManagementServiceCorbaBean.locateObject(session.getLocation());
+            result = shellHelper.getSuccessMessage(eventManagementServiceImpl.getBookingSchedule(customerID));
+
         } catch (EventManagementServiceException e) {
             session.getUserActivityLogger().log(String.format("action [bookEvent], param customerID [%s], error [%s]", customerID, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
-        } catch (RemoteException e) {
+        } catch (BeansException e) {
             session.getUserActivityLogger().log(String.format("action [bookEvent], param customerID [%s], error [%s]", customerID, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
-        } catch (BeansException e) {
+        } catch (Exception e) {
             session.getUserActivityLogger().log(String.format("action [bookEvent], param customerID [%s], error [%s]", customerID, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }
@@ -284,16 +303,23 @@ public class BookingController {
 
         String result = null;
         try {
-            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
-            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-            result = shellHelper.getSuccessMessage(eventManagementService.cancelEvent(customerID, eventID, EventType.get(eventType)));
+            //RMI
+//            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
+//            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
+//            result = shellHelper.getSuccessMessage(eventManagementService.cancelEvent(customerID, eventID, EventType.get(eventType)));
+
+            //CORBA
+            dems.EventManagementServiceImpl eventManagementServiceImpl = eventManagementServiceCorbaBean.locateObject(session.getLocation());
+            result = shellHelper.getSuccessMessage(eventManagementServiceImpl.cancelEvent(customerID, eventID, eventType));
+
+
         } catch (EventManagementServiceException e) {
             session.getUserActivityLogger().log(String.format("action [cancelEvent], param customerID [%s], eventID [%s], eventType [%s], error [%s]", customerID, eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
-        } catch (RemoteException e) {
+        } catch (BeansException e) {
             session.getUserActivityLogger().log(String.format("action [cancelEvent], param customerID [%s], eventID [%s], eventType [%s], error [%s]", customerID, eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
-        } catch (BeansException e) {
+        } catch (Exception e) {
             session.getUserActivityLogger().log(String.format("action [cancelEvent], param customerID [%s], eventID [%s], eventType [%s], error [%s]", customerID, eventID, eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
         }

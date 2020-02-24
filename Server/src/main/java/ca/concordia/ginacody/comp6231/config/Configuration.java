@@ -38,6 +38,17 @@ public class Configuration {
     /**
      *
      */
+    public static int ORB_PORT = 1050;
+
+    /**
+     *
+     */
+    public static String ORB_HOST = "localhost";
+
+
+    /**
+     *
+     */
     static {
         UDP_SERVERS_PORTS.putIfAbsent("MTL", new Integer(8080));
         UDP_SERVERS_PORTS.putIfAbsent("SHE", new Integer(8081));

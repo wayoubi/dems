@@ -23,8 +23,8 @@ public class ServerRunner {
     public static void main(String[] args) {
 
         LOGGER.debug("checking passed parameters, count {} ", args.length);
-        if(args.length != 3 ) {
-            LOGGER.error("Please add required arguments, Sever Location, RMI Port, UDP Port");
+        if(args.length != 5 ) {
+            LOGGER.error("Please add required arguments, Sever Location, RMI Port, UDP Port, ORB Port, ORB Host");
             return;
         }
 
@@ -51,6 +51,17 @@ public class ServerRunner {
             LOGGER.error("Passed RMI Server port is invalid {}, default will be used {}", args[2].trim(), Configuration.UDP_PORT);
         }
 
+        LOGGER.debug("checking passed ORB Server port to be in valid {}", args[3]);
+        try {
+            Configuration.ORB_PORT = Integer.parseInt(args[3]);
+        } catch(NumberFormatException nfex) {
+            LOGGER.error("Passed ORB port is invalid {}, default will be used {}", args[2].trim(), Configuration.ORB_PORT);
+        }
+
+        LOGGER.debug("checking passed ORB Host to be in valid {}", args[4]);
+        Configuration.ORB_HOST = args[4];
+
+
         LOGGER.info("Starting RMI Server .....");
         Thread rmiInitializer = new Thread(new RMIInitializer());
         rmiInitializer.setName("RMIInitializer");
@@ -60,6 +71,11 @@ public class ServerRunner {
         Thread udpServerThread = new Thread(new UDPServer());
         udpServerThread.setName("UDP Server Thread");
         udpServerThread.start();
+
+        LOGGER.info("Starting CORBA Server .....");
+        Thread corbaServerThread = new Thread(new CorbaServer());
+        corbaServerThread.setName("CORBA Server Thread");
+        corbaServerThread.start();
     }
 
 }
