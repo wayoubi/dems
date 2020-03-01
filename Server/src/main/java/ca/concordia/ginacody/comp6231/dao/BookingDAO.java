@@ -44,12 +44,12 @@ public class BookingDAO {
         synchronized(BookingDAO.mutex) {
             Database.getInstance().getEvents().computeIfAbsent(eventVO.getEventType(), eventType -> {
                 LOGGER.error("No {} Events exist, nothing will be booked", eventType);
-                throw new EventManagementServiceException(String.format("No %s Events exist, nothing will be booked", eventType));
+                throw new EventManagementServiceException(String.format("Error: No %s Events exist, nothing will be booked", eventType));
             });
             Database.getInstance().getEvents().computeIfPresent(eventVO.getEventType(), (type, map) -> {
                 map.computeIfAbsent(eventVO.getId(), eventId -> {
                     LOGGER.error("Event {} does not exit, nothing will be booked", eventId);
-                    throw new EventManagementServiceException(String.format("Event %s does not exit, nothing will be booked", eventId));
+                    throw new EventManagementServiceException(String.format("Error: Event %s does not exit, nothing will be booked", eventId));
                 });
                 return map;
             });
@@ -58,8 +58,11 @@ public class BookingDAO {
 
                     LOGGER.info("Check if customer already made a booking in this event {} type {}", eventId, eventVO1.getEventType());
                     Database.getInstance().getEventRecords().computeIfPresent(eventVO1, (eventVO2, list) -> {
+                        if(customerID.length()>8 && list.contains(customerID.substring(0, 8)) ) {
+                            throw new EventManagementServiceException(String.format("Error: Customer %s is already booked for %s", customerID.substring(0, 7), eventId));
+                        }
                         if(list.contains(customerID)) {
-                            throw new EventManagementServiceException(String.format("Customer %s is already booked for %s", customerID, eventId));
+                            throw new EventManagementServiceException(String.format("Error: Customer %s is already booked for %s", customerID, eventId));
                         }
                         return list;
                     });
@@ -83,14 +86,14 @@ public class BookingDAO {
                         });
 
                     } else {
-                        throw new EventManagementServiceException(String.format("Event %s is full, nothing will be booked", eventId));
+                        throw new EventManagementServiceException(String.format("Error: Event %s is full, nothing will be booked", eventId));
                     }
                     return eventVO1;
                 });
                 return map;
             });
         }
-        return String.format("Event %s booked for Customer %s successfully", eventVO.getId(), customerID);
+        return String.format("Success: Event %s booked for Customer %s successfully", eventVO.getId(), customerID);
     }
 
     /**
@@ -104,11 +107,11 @@ public class BookingDAO {
         synchronized(BookingDAO.mutex) {
             Database.getInstance().getUserRecords().computeIfAbsent(customerID, s -> {
                 LOGGER.error("No bookings for {} on {} database", s, Configuration.SERVER_LOCATION);
-                throw new EventManagementServiceException(String.format("No bookings for %s on %s database", s, Configuration.SERVER_LOCATION));
+                throw new EventManagementServiceException(String.format("Error: No bookings for %s on %s database", s, Configuration.SERVER_LOCATION));
             });
             Database.getInstance().getEvents().computeIfAbsent(eventVO.getEventType(), eventType -> {
                 LOGGER.error("No {} Events exist, nothing will be canceled", eventType);
-                throw new EventManagementServiceException(String.format("No %s Events exist, nothing will be canceled", eventType));
+                throw new EventManagementServiceException(String.format("Error: No %s Events exist, nothing will be canceled", eventType));
             });
             Database.getInstance().getEvents().computeIfPresent(eventVO.getEventType(), (type, map) -> {
                 map.computeIfPresent(eventVO.getId(), (eventId, eventVO1) -> {
@@ -118,7 +121,7 @@ public class BookingDAO {
                            list.remove(customerID);
                            Database.getInstance().getUserRecords().get(customerID).remove(eventVO);
                         } else {
-                            throw new EventManagementServiceException(String.format("%s is not booking Event %s %s", customerID, eventVO.getEventType(),eventVO.getId()));
+                            throw new EventManagementServiceException(String.format("Error: Event %s %s is not booked for customer %s", eventVO.getId(), eventVO.getEventType(), customerID));
                         }
                         return list;
                     });
@@ -128,7 +131,7 @@ public class BookingDAO {
                 return map;
             });
         }
-        return String.format("Event %s is canceled for Customer %s successfully", eventVO.getId(), customerID);
+        return String.format("Success: Event %s is canceled for Customer %s successfully", eventVO.getId(), customerID);
     }
 
     /**
@@ -138,11 +141,14 @@ public class BookingDAO {
      * @throws EventManagementServiceException
      */
     public String selectAllBookings(String customerID) throws EventManagementServiceException {
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder("Success:");
         Database.getInstance().getUserRecords().computeIfAbsent(customerID, s -> {
-            throw new EventManagementServiceException(String.format("No bookings for %s on %s database", s, Configuration.SERVER_LOCATION));
+            throw new EventManagementServiceException(String.format("Error: No bookings for %s on %s database", s, Configuration.SERVER_LOCATION));
         });
         Database.getInstance().getUserRecords().computeIfPresent(customerID, (s, eventVOS) -> {
+            if(eventVOS.size() == 0) {
+                throw new EventManagementServiceException(String.format("Error: No bookings for %s on %s database", s, Configuration.SERVER_LOCATION));
+            }
             eventVOS.stream().sorted(Comparator.comparing(EventVO::getDate)).forEach(eventVO -> {
                 stringBuilder.append(String.format("%s %s on %s at %s is confirmed$$", eventVO.getEventType(), eventVO.getId(), eventVO.getDate(), eventVO.getEventTimeSlot()));
             });
@@ -164,5 +170,27 @@ public class BookingDAO {
             return eventVOS;
         });
         return atomicInteger.get();
+    }
+
+    /**
+     *
+     * @param trxNumber
+     */
+    public String commit(String trxNumber) {
+        StringBuilder stringBuilder = new StringBuilder("Success:");
+        Optional<EventVO> optional = Optional.ofNullable(Database.getInstance().getUserRecords().get(trxNumber).get(0));
+        optional.ifPresent(eventVO -> {
+            Database.getInstance().getEventRecords().get(eventVO).remove(trxNumber);
+            Database.getInstance().getEventRecords().get(eventVO).add(trxNumber.substring(0,8));
+            Database.getInstance().getUserRecords().remove(trxNumber);
+            Database.getInstance().getUserRecords().computeIfPresent(trxNumber.substring(0,8), (s, eventVOS) -> {
+                eventVOS.add(eventVO);
+                return eventVOS;
+            });
+            Database.getInstance().getUserRecords().computeIfAbsent(trxNumber.substring(0,8), s -> {
+                return new ArrayList<>();
+            }).add(eventVO);
+        });
+        return stringBuilder.toString();
     }
 }

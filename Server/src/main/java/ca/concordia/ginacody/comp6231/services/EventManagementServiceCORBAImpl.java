@@ -1,5 +1,6 @@
 package ca.concordia.ginacody.comp6231.services;
 
+import ca.concordia.ginacody.comp6231.config.Configuration;
 import ca.concordia.ginacody.comp6231.enums.EventType;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
 import ca.concordia.ginacody.comp6231.facade.EventManagementBusinessDelegate;
@@ -7,6 +8,8 @@ import dems.EventManagementServiceImplPOA;
 import org.omg.CORBA.ORB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.UUID;
 
 public class EventManagementServiceCORBAImpl extends EventManagementServiceImplPOA {
 
@@ -94,6 +97,16 @@ public class EventManagementServiceCORBAImpl extends EventManagementServiceImplP
         try {
             EventManagementBusinessDelegate eventManagementBusinessDelegate = new EventManagementBusinessDelegate();
             return eventManagementBusinessDelegate.cancelEvent(customerID, eventID, EventType.get(eventType));
+        } catch(EventManagementServiceException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Override
+    public String swapEvent(String customerID, String eventID, String eventType, String oldEventID, String oldEventType) {
+        try {
+            EventManagementBusinessDelegate eventManagementBusinessDelegate = new EventManagementBusinessDelegate();
+            return eventManagementBusinessDelegate.swapEvent(customerID, eventID, EventType.get(eventType), oldEventID, EventType.get(oldEventType));
         } catch(EventManagementServiceException e) {
             return e.getMessage();
         }

@@ -61,10 +61,10 @@ public class RequestProcessor extends Thread {
             aSocket.receive(reply);
             replyMessage = new String(reply.getData()).substring(0, reply.getData().length).replaceAll("[^\\x00-\\x7F]", "").replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "").replaceAll("\\p{C}", "");
         } catch (SocketException e) {
-            this.replyMessage = String.format("Error while communicating with remote server %s, error is $s%s", this.remoteLocation, e.getMessage(), System.lineSeparator());
+            this.replyMessage = String.format("Communication Error: Error while communicating with remote server %s, error is $s%s", this.remoteLocation, e.getMessage(), System.lineSeparator());
             LOGGER.error("{}", e.getMessage());
         } catch (IOException e) {
-            this.replyMessage = String.format("Error while communicating with remote server %s, error is %s%s", this.remoteLocation, e.getMessage(), System.lineSeparator());
+            this.replyMessage = String.format("Communication Error: Error while communicating with remote server %s, error is %s%s", this.remoteLocation, e.getMessage(), System.lineSeparator());
             LOGGER.error("{}", e.getMessage());
         } finally {
             if (aSocket != null)

@@ -326,4 +326,140 @@ public class BookingController {
         session.getUserActivityLogger().log(String.format("action [cancelEvent], param customerID [%s], eventID [%s], eventType [%s], result [%s]", customerID, eventID, eventType, result));
         return result;
     }
+
+
+    /**
+     *
+     * @param customerID
+     * @param eventID
+     * @param eventType
+     * @param oldEventID
+     * @param oldEventType
+     * @return
+     */
+    @ShellMethod("Swap Event")
+    public String swapEvent(@ShellOption(value = {"-customerid"}) String customerID,
+                            @ShellOption(value = {"-eventid"}) String eventID,
+                            @ShellOption(value = {"-type"}) String eventType,
+                            @ShellOption(value = {"-oldeventid"}) String oldEventID,
+                            @ShellOption(value = {"-oldtype"}) String oldEventType
+    ) {
+        log.debug("inside swapEvent, customerID {}, eventID {}, eventType {}, oldEventID {}, oldEeventType{}", customerID, eventID, eventType, oldEventID, oldEventType);
+        String debugErrorMessage = "action [swapEvent], param customerID [%s], eventID [%s], eventType [%s], eventID [%s], oldEventType [%s], error [%s]";
+
+        log.debug("checking if there is a logged in user {}", session.isActive());
+        if (!session.isActive()) {
+            return shellHelper.getErrorMessage("No Logged in user, Please login");
+        }
+
+        log.debug("checking if session user {} is a Manager or a Customer", session.getUserName());
+        if (!UserType.EVENT_MANAGER.equals(session.getUserType()) && !UserType.CUSTOMER.equals(session.getUserType())) {
+            String msg = String.format("User %s is not authorized to perform this action", session.getUserName());
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        log.debug("checking customerID to be in valid format {} {}", usernamePattern, customerID);
+        Pattern pattern = Pattern.compile(usernamePattern);
+        if (!pattern.matcher(customerID).matches()) {
+            String msg = "Invalid customerID";
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        log.debug("checking customerID is not a manager {}", customerID);
+        if (UserType.EVENT_MANAGER.equals(UserType.get(Character.toString(customerID.charAt(3))))) {
+            String msg = "Invalid customerID, Manager cannot book or cancel events for themselves";
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        log.debug("checking eventID to be in valid format {} {}", eventIDPattern, eventID);
+        pattern = Pattern.compile(eventIDPattern);
+        if (!pattern.matcher(eventID).matches()) {
+            String msg = "Invalid eventID";
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        log.debug("checking event type {}", eventType);
+        if (EventType.get(eventType) == null) {
+            String msg = String.format("Invalid event type %s", eventType);
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        String dateStr = eventID.substring(4);
+        log.debug("checking event Date {}", dateStr);
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(eventDatePattern);
+            simpleDateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            String msg = String.format("Invalid event Date %s", dateStr);
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        char timeSlot = eventID.charAt(3);
+        log.debug("checking event Time Slot {}", timeSlot);
+        if (EventTimeSlot.get(Character.toString(timeSlot)) == null) {
+            String msg = String.format("Invalid Event time slot %s", timeSlot);
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        log.debug("checking oldEventID to be in valid format {} {}", eventIDPattern, oldEventID);
+        if (!pattern.matcher(oldEventID).matches()) {
+            String msg = String.format("Invalid oldEventID %s", oldEventID);
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        log.debug("checking old event type {}", oldEventType);
+        if (EventType.get(oldEventType) == null) {
+            String msg = String.format("Invalid old event type %s", oldEventType);
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        dateStr = oldEventID.substring(4);
+        log.debug("checking old event Date {}", dateStr);
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(eventDatePattern);
+            simpleDateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            String msg = String.format("Invalid old event Date %s", dateStr);
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        timeSlot = eventID.charAt(3);
+        log.debug("checking old event Time Slot {}", timeSlot);
+        if (EventTimeSlot.get(Character.toString(timeSlot)) == null) {
+            String msg = String.format("Invalid Old Event time slot %s", timeSlot);
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, msg));
+            return shellHelper.getErrorMessage(msg);
+        }
+
+        String result = null;
+        try {
+            //Supported By CORBA Only
+            dems.EventManagementServiceImpl eventManagementServiceImpl = eventManagementServiceCorbaBean.locateObject(session.getLocation());
+            result = shellHelper.getSuccessMessage(eventManagementServiceImpl.swapEvent(customerID, eventID, eventType, oldEventID, oldEventType));
+
+        } catch (EventManagementServiceException e) {
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, e.getMessage()));
+            return shellHelper.getErrorMessage(e.getMessage());
+        }  catch (BeansException e) {
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, e.getMessage()));
+            return shellHelper.getErrorMessage(e.getMessage());
+        } catch (Exception e) {
+            session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, e.getMessage()));
+            return shellHelper.getErrorMessage(e.getMessage());
+        }
+        debugErrorMessage.replace("error", "result");
+        session.getUserActivityLogger().log(String.format(debugErrorMessage, customerID, eventID, eventType, oldEventID, oldEventType, result));
+        return result;
+    }
+
 }

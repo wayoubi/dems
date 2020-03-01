@@ -1,0 +1,7 @@
+login-user MTLM1000
+create-event -capacity 2 -id MTLM020220 -type CONFERENCE
+create-event -capacity 2 -id MTLM030220 -type CONFERENCE
+list-event-availability -type CONFERENCE
+book-event -customerid MTLC1500 -eventid MTLM020220 -type CONFERENCE
+list-bookings -customerid MTLC1500
+swap-event -customerid MTLC1500 -eventid MTLM030220 -type CONFERENCE -oldeventid MTLM020220 -oldtype CONFERENCE

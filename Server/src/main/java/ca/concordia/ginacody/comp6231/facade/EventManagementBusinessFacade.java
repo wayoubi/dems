@@ -81,4 +81,15 @@ public class EventManagementBusinessFacade implements EventManagementService {
         BookingDAO bookingDAO = new BookingDAO();
         return bookingDAO.countBookingInSameWeek(customerID, eventVO);
     }
+
+    /**
+     *
+     * @param trxNumber
+     * @return
+     */
+    public String commitTrx(String trxNumber) {
+        LOGGER.info("Commit Transaction {}", trxNumber);
+        BookingDAO bookingDAO = new BookingDAO();
+        return bookingDAO.commit(trxNumber);
+    }
 }

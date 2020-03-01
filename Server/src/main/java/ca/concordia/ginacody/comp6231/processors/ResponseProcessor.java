@@ -110,6 +110,14 @@ public class ResponseProcessor extends Thread {
             } catch (EventManagementServiceException e) {
                 stringBuilder.append(String.format("%s, Response from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
             }
+        } else if("commitTrx".equals(command)) {
+            String trxNumber = stringTokenizer.nextToken();
+            EventManagementBusinessFacade eventManagementBusinessFacade = new EventManagementBusinessFacade();
+            try {
+                stringBuilder.append(eventManagementBusinessFacade.commitTrx(trxNumber));
+            } catch (EventManagementServiceException e) {
+                stringBuilder.append(String.format("%s, Response from remote server %s%s", e.getMessage(), Configuration.SERVER_LOCATION, System.lineSeparator()));
+            }
         } else {
             LOGGER.warn("Unsupported request {}", this.getRequest().getAddress(), this.getRequest().getPort(), command);
             stringBuilder.append(String.format("Unsupported Operation [%s], Response from remote server %s%s", command, Configuration.SERVER_LOCATION, System.lineSeparator())) ;

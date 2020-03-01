@@ -9,6 +9,7 @@ module dems
      string bookEvent(in string customerID, in string eventID, in string eventType);
      string getBookingSchedule(in string customerID);
      string cancelEvent(in string customerID, in string eventID, in string eventType) ;
+     string swapEvent(in string customerID, in string eventID, in string eventType, in string oldEventID, in string oldEventType);
      oneway void shutdown();
     };
 };

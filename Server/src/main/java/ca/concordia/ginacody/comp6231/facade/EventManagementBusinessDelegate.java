@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -90,7 +91,7 @@ public class EventManagementBusinessDelegate implements EventManagementService {
         LOGGER.debug("checking event location exist {}", eventLocation);
         Optional<Integer> optional = Optional.ofNullable(Configuration.UDP_SERVERS_PORTS.get(eventLocation));
         if(!optional.isPresent()) {
-            throw new EventManagementServiceException(String.format("Unknown event location %s", eventLocation));
+            throw new EventManagementServiceException(String.format("Error: Unknown event location %s", eventLocation));
         }
 
         LOGGER.debug("Checking if Customer {} is Local, Event{} is Local from Local Client {}", customerID, eventID, Configuration.SERVER_LOCATION);
@@ -122,7 +123,7 @@ public class EventManagementBusinessDelegate implements EventManagementService {
             atomicInteger.set(eventManagementBusinessFacade.getBookingCountInSameWeek(customerID,eventID,eventType));
             if(atomicInteger.get()>=3) {
                 LOGGER.info("3 Remote events during same week are already booked for customerID {}, eventID {}, EventType {}", customerID, eventID,  eventType);
-                throw new EventManagementServiceException(String.format("3 Remote events during same week are already booked for customerID %s, eventID %s, EventType %s", customerID, eventID,  eventType));
+                throw new EventManagementServiceException(String.format("Error: 3 Remote events during same week are already booked for customerID %s, eventID %s, EventType %s", customerID, eventID,  eventType));
             }
         }
 
@@ -146,14 +147,14 @@ public class EventManagementBusinessDelegate implements EventManagementService {
                     atomicInteger.set(atomicInteger.get()+counter);
                 } catch (NumberFormatException nfex) {
                     LOGGER.info("Booking failed customerID {} eventID {} eventType {}. Invalid response from remote server {}, error {}", customerID, eventID,  eventType, location0, requestProcessor.getReplyMessage());
-                    throw new EventManagementServiceException(String.format("Booking failed customerID %s eventID %s eventType %s, invalid response from remote server %s, error %s", customerID, eventID,  eventType, location0,  requestProcessor.getReplyMessage()));
+                    throw new EventManagementServiceException(String.format("Error: Booking failed customerID %s eventID %s eventType %s, invalid response from remote server %s, error %s", customerID, eventID,  eventType, location0,  requestProcessor.getReplyMessage()));
                 }
             }
         });
 
         if(atomicInteger.get()>=3) {
             LOGGER.info("3 Remote events during same week are already booked for customerID {}, eventID {}, EventType {}", customerID, eventID,  eventType);
-            throw new EventManagementServiceException(String.format("3 Remote events during same week are already booked for customerID %s, eventID %s, EventType %s", customerID, eventID,  eventType));
+            throw new EventManagementServiceException(String.format("Error: 3 Remote events during same week are already booked for customerID %s, eventID %s, EventType %s", customerID, eventID,  eventType));
         }
 
         if(Configuration.SERVER_LOCATION.equals(eventLocation)) {
@@ -224,7 +225,7 @@ public class EventManagementBusinessDelegate implements EventManagementService {
         LOGGER.debug("checking event location exist {}", eventLocation);
         Optional<Integer> optional = Optional.ofNullable(Configuration.UDP_SERVERS_PORTS.get(eventLocation));
         if(!optional.isPresent()) {
-            throw new EventManagementServiceException(String.format("Unknown event location %s", eventLocation));
+            throw new EventManagementServiceException(String.format("Error: Unknown event location %s", eventLocation));
         }
 
         LOGGER.debug("Checking if Event{} is Local from Local Client {}", eventID, Configuration.SERVER_LOCATION);
@@ -244,6 +245,78 @@ public class EventManagementBusinessDelegate implements EventManagementService {
                 LOGGER.error("{} caused by {}", intex.getMessage(), intex.getCause().getMessage());
             }
             LOGGER.info("Adding response - Cancel Event, customerID {} eventID {} EventType {}", customerID, eventID, eventType);
+            return requestProcessor.getReplyMessage();
+        }
+    }
+
+    /**
+     *
+     * @param customerID
+     * @param eventID
+     * @param eventType
+     * @param oldEventID
+     * @param oldEventType
+     * @return
+     */
+    public String swapEvent(String customerID, String eventID, EventType eventType, String oldEventID, EventType oldEventType) {
+        String trxNumber = customerID  + UUID.randomUUID().toString();
+        String result = this.bookEvent(trxNumber, eventID, eventType);
+        if(result.startsWith("Success:")) {
+            result = this.cancelEvent(customerID, oldEventID, oldEventType);
+            if(result.startsWith("Success:")) {
+                String temp = null;
+                do {
+                    temp = this.commitTrx(trxNumber, eventID);
+                    if(temp.startsWith("Success:")) {
+                        result = String.format("Success: customerID %s swapped Event %s of Type %s with Event %s of Type %s ", customerID, oldEventID, oldEventType, eventID, eventType);
+                    }
+                } while(temp.startsWith("Communication Error:"));
+            } else {
+                String temp = null;
+                do {
+                    temp = this.cancelEvent(trxNumber, eventID, eventType);
+                } while(temp.startsWith("Communication Error:"));
+                result = result.replace(trxNumber, customerID);
+            }
+        } else {
+            result = result.replace(trxNumber, customerID);
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param trxNumber
+     * @return
+     */
+    public String commitTrx(String trxNumber, String eventID){
+        LOGGER.info("Commit Transaction {}", trxNumber);
+
+        String eventLocation = eventID.substring(0,3);
+
+        LOGGER.debug("checking Transaction location exist {}", eventLocation);
+        Optional<Integer> optional = Optional.ofNullable(Configuration.UDP_SERVERS_PORTS.get(eventLocation));
+        if(!optional.isPresent()) {
+            throw new EventManagementServiceException(String.format("Error: Unknown Transaction location %s", eventLocation));
+        }
+
+        LOGGER.debug("Checking if Transaction {} is Local from Local Client {}", trxNumber, Configuration.SERVER_LOCATION);
+        if(Configuration.SERVER_LOCATION.equals(eventLocation)) {
+            LOGGER.debug("Local Transaction {} Local location {}",  trxNumber, Configuration.SERVER_LOCATION);
+            return eventManagementBusinessFacade.commitTrx(trxNumber);
+        } else {
+            LOGGER.info("Communication with remote server {} to commit transaction {}", trxNumber);
+            RequestProcessor requestProcessor = new RequestProcessor(eventLocation, String.format("%s:commitTrx:%s:", Configuration.SERVER_LOCATION, trxNumber));
+            requestProcessor.setName(String.format("Request Processor - %s", requestProcessor.hashCode()));
+            requestProcessor.start();
+            try {
+                LOGGER.info("Waiting for Commit Transaction from {} for Transaction {}", eventLocation, trxNumber);
+                requestProcessor.join();
+            } catch (InterruptedException intex) {
+                requestProcessor.interrupt();
+                LOGGER.error("{} caused by {}", intex.getMessage(), intex.getCause().getMessage());
+            }
+            LOGGER.info("Adding response - Commit Transaction, Transaction {}", trxNumber);
             return requestProcessor.getReplyMessage();
         }
     }

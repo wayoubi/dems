@@ -40,7 +40,7 @@ public class EventDAO {
                     newEvent.set(false);
                     if(event.getNumberOfAttendees() > eventVO.getCapacity()) {
                         LOGGER.error("Event {} cannot be updated, new capacity is less than already registered users", event.getId());
-                        throw new EventManagementServiceException(String.format("Event %s cannot be updated, new capacity is less than already registered users", eventVO.getId()));
+                        throw new EventManagementServiceException(String.format("Error: Event %s cannot be updated, new capacity is less than already registered users", eventVO.getId()));
                     } else if(event.getNumberOfAttendees() <= eventVO.getCapacity()){
                         event.setCapacity(eventVO.getCapacity());
                         LOGGER.info("Event {} updated successfully", eventVO.getId());
@@ -55,10 +55,10 @@ public class EventDAO {
             });
             Database.getInstance().getEvents().computeIfAbsent(eventVO.getEventType(), eventType -> new HashMap<>()).putIfAbsent(eventVO.getId(), eventVO);
         }
-        String result = String.format("Event %s updated successfully", eventVO.getId());
+        String result = String.format("Success: Event %s updated successfully", eventVO.getId());
         if (newEvent.get()) {
             LOGGER.info("Event {} added successfully", eventVO.getId());
-            result = String.format("Event %s added successfully", eventVO.getId());
+            result = String.format("Success: Event %s added successfully", eventVO.getId());
         }
         return result;
     }
@@ -73,12 +73,12 @@ public class EventDAO {
         synchronized (EventDAO.mutex) {
             Database.getInstance().getEvents().computeIfAbsent(eventVO.getEventType(), eventType -> {
                 LOGGER.error("No {} Events exist, nothing will be removed", eventType);
-                throw new EventManagementServiceException(String.format("No %s Events exist, nothing will be removed", eventType));
+                throw new EventManagementServiceException(String.format("Error: No %s Events exist, nothing will be removed", eventType));
             });
             Database.getInstance().getEvents().computeIfPresent(eventVO.getEventType(), (type, map) -> {
                 map.computeIfAbsent(eventVO.getId(), eventId -> {
                     LOGGER.error("Event {} does not exit, nothing will be removed", eventId);
-                    throw new EventManagementServiceException(String.format("Event %s does not exit, nothing will be removed", eventId));
+                    throw new EventManagementServiceException(String.format("Error: Event %s does not exit, nothing will be removed", eventId));
                 });
                 return map;
             });
@@ -113,7 +113,7 @@ public class EventDAO {
                 return map;
             });
         }
-        return String.format("Event %s removed successfully", eventVO.getId());
+        return String.format("Success: Event %s removed successfully", eventVO.getId());
     }
 
     /**
@@ -126,13 +126,13 @@ public class EventDAO {
         LOGGER.info("selectAllEvents {}", eventType);
         Database.getInstance().getEvents().computeIfAbsent(eventType, et -> {
             LOGGER.error("No {} Events exist, nothing will be listed", et);
-            throw new EventManagementServiceException(String.format("No %s Events exist, nothing will be listed", et));
+            throw new EventManagementServiceException(String.format("Error: No %s Events exist, nothing will be listed", et));
         });
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder("Success:");
         Database.getInstance().getEvents().computeIfPresent(eventType, (eventType1, stringEventVOMap) -> {
             if(stringEventVOMap.values().isEmpty()){
                 LOGGER.error("No {} Events exist, nothing will be listed", eventType1);
-                throw new EventManagementServiceException(String.format("No %s Events exist, nothing will be listed", eventType1));
+                throw new EventManagementServiceException(String.format("Error: No %s Events exist, nothing will be listed", eventType1));
             }
             stringEventVOMap.values().stream().sorted(Comparator.comparing(EventVO::getDate)).forEach(eventVO -> {
                 stringBuilder.append(String.format("%s %s scheduled on %s at %s - available places [%s]$$",eventVO.getEventType(), eventVO.getId(),eventVO.getDate(), eventVO.getEventTimeSlot(), (eventVO.getCapacity()-eventVO.getNumberOfAttendees())));
