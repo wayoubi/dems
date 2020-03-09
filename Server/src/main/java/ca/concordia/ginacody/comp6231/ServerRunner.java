@@ -62,20 +62,25 @@ public class ServerRunner {
         Configuration.ORB_HOST = args[4];
 
 
-        LOGGER.info("Starting RMI Server .....");
-        Thread rmiInitializer = new Thread(new RMIInitializer());
-        rmiInitializer.setName("RMIInitializer");
-        rmiInitializer.start();
+//        LOGGER.info("Starting RMI Server .....");
+//        Thread rmiInitializer = new Thread(new RMIInitializer());
+//        rmiInitializer.setName("RMIInitializer");
+//        rmiInitializer.start();
 
         LOGGER.info("Starting UDP Server .....");
         Thread udpServerThread = new Thread(new UDPServer());
         udpServerThread.setName("UDP Server Thread");
         udpServerThread.start();
 
-        LOGGER.info("Starting CORBA Server .....");
-        Thread corbaServerThread = new Thread(new CorbaServer());
-        corbaServerThread.setName("CORBA Server Thread");
-        corbaServerThread.start();
+//        LOGGER.info("Starting CORBA Server .....");
+//        Thread corbaServerThread = new Thread(new CorbaServer());
+//        corbaServerThread.setName("CORBA Server Thread");
+//        corbaServerThread.start();
+
+        LOGGER.info("Starting SOAP Server .....");
+        Thread soapServerThread = new Thread(new SOAPServer());
+        soapServerThread.setName("SOAP Server Thread");
+        soapServerThread.start();
     }
 
 }
