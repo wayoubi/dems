@@ -6,6 +6,7 @@ import ca.concordia.ginacody.comp6231.facade.EventManagementBusinessDelegate;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
 
 @WebService(endpointInterface = "ca.concordia.ginacody.comp6231.services.ws.EventManagementService")
 public class EventManagementServiceImpl implements EventManagementService {

@@ -32,11 +32,11 @@ public class SOAPServer implements Runnable {
     public void run() {
         try {
             this.setStarted(true);
-            Endpoint.publish("http://localhost:9090/demsservice", new EventManagementServiceImpl());
+            Endpoint.publish(String.format("http://localhost:%s/demsservice", Configuration.HTTP_PORT), new EventManagementServiceImpl());
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
-        LOGGER.info(String.format("DEMS SOAP Service %s is published ...", Configuration.SERVER_LOCATION));
+        LOGGER.info(String.format("%s DEMS SOAP Service is published on port %s ...", Configuration.SERVER_LOCATION, Configuration.HTTP_PORT));
     }
 
     /**

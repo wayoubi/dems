@@ -7,8 +7,8 @@ import ca.concordia.ginacody.comp6231.client.rmi.EventManagementServiceFactoryBe
 import ca.concordia.ginacody.comp6231.client.shell.ShellHelper;
 import ca.concordia.ginacody.comp6231.enums.EventTimeSlot;
 import ca.concordia.ginacody.comp6231.enums.EventType;
-import ca.concordia.ginacody.comp6231.services.EventManagementService;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
+import ca.concordia.ginacody.comp6231.services.ws.EventManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -20,6 +20,9 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
@@ -84,15 +87,18 @@ public class EventManagerController {
         String result = null;
         try {
             session.init(userName);
-
-            //RMI
-            //EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
-            //EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-            //result = shellHelper.getSuccessMessage(eventManagementService.login(userName));
-
-            //CORBA
-            dems.EventManagementServiceImpl eventManagementServiceImpl = eventManagementServiceCorbaBean.locateObject(session.getLocation());
-            result = shellHelper.getSuccessMessage(eventManagementServiceImpl.login(userName));
+            URL addURL = null;
+            if("MTL".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9090"));
+            } else if("SHE".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9091"));
+            } else if("QUE".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9092"));
+            }
+            QName addQName = new QName("http://ws.services.comp6231.ginacody.concordia.ca/", "EventManagementServiceImplService");
+            Service service = Service.create(addURL, addQName);
+            EventManagementService eventManagementService = service.getPort(EventManagementService.class);
+            result = shellHelper.getSuccessMessage(eventManagementService.login(userName));
 
         } catch (EventManagementServiceException e) {
             session.getUserActivityLogger().log(String.format("action [login], param userName [%s], error [%s]", userName, e.getMessage()));
@@ -185,17 +191,18 @@ public class EventManagerController {
 
         String result = null;
         try {
-
-            //RMI
-//            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
-//            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-//            result = shellHelper.getSuccessMessage(eventManagementService.addEvent(eventID, EventType.get(eventType), capacityValue));
-
-            //CORBA
-            dems.EventManagementServiceImpl eventManagementServiceImpl = eventManagementServiceCorbaBean.locateObject(session.getLocation());
-            result = shellHelper.getSuccessMessage(eventManagementServiceImpl.addEvent(eventID, eventType, capacityValue));
-
-
+            URL addURL = null;
+            if("MTL".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9090"));
+            } else if("SHE".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9091"));
+            } else if("QUE".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9092"));
+            }
+            QName addQName = new QName("http://ws.services.comp6231.ginacody.concordia.ca/", "EventManagementServiceImplService");
+            Service service = Service.create(addURL, addQName);
+            EventManagementService eventManagementService = service.getPort(EventManagementService.class);
+            result = shellHelper.getSuccessMessage(eventManagementService.addEvent(eventID, EventType.get(eventType), capacityValue));
         } catch (EventManagementServiceException e) {
             session.getUserActivityLogger().log(String.format("action [createEvent], param eventID [%s], eventType [%s], capacity [%s] error [%s]", eventID, eventType, capacity, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());
@@ -275,15 +282,18 @@ public class EventManagerController {
 
         String result = null;
         try {
-
-            //RMI
-//            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
-//            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-//            result = shellHelper.getSuccessMessage(eventManagementService.removeEvent(eventID, EventType.get(eventType)));
-
-            //CORBA
-            dems.EventManagementServiceImpl eventManagementServiceImpl = eventManagementServiceCorbaBean.locateObject(session.getLocation());
-            result = shellHelper.getSuccessMessage(eventManagementServiceImpl.removeEvent(eventID, eventType));
+            URL addURL = null;
+            if("MTL".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9090"));
+            } else if("SHE".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9091"));
+            } else if("QUE".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9092"));
+            }
+            QName addQName = new QName("http://ws.services.comp6231.ginacody.concordia.ca/", "EventManagementServiceImplService");
+            Service service = Service.create(addURL, addQName);
+            EventManagementService eventManagementService = service.getPort(EventManagementService.class);
+            result = shellHelper.getSuccessMessage(eventManagementService.removeEvent(eventID, EventType.get(eventType)));
 
         } catch (EventManagementServiceException e) {
             session.getUserActivityLogger().log(String.format("action [removeEvent], param eventID [%s], eventType [%s], error [%s]", eventID, eventType, e.getMessage()));
@@ -330,16 +340,18 @@ public class EventManagerController {
 
         String result = null;
         try {
-
-            //RMI
-//            EventManagementServiceFactoryBean eventManagementServiceFactoryBean = this.eventManagementServiceFactoryBeanProvider.getObject(session);
-//            EventManagementService eventManagementService = beanFactory.getBean(EventManagementService.class);
-//            result = shellHelper.getSuccessMessage(eventManagementService.listEventAvailability(EventType.get(eventType)));
-
-            //CORBA
-            dems.EventManagementServiceImpl eventManagementServiceImpl = eventManagementServiceCorbaBean.locateObject(session.getLocation());
-            result = shellHelper.getSuccessMessage(eventManagementServiceImpl.listEventAvailability(eventType));
-
+            URL addURL = null;
+            if("MTL".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9090"));
+            } else if("SHE".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9091"));
+            } else if("QUE".equals(session.getLocation())) {
+                addURL = new URL(String.format("http://localhost:%s/demsservice?wsdl","9092"));
+            }
+            QName addQName = new QName("http://ws.services.comp6231.ginacody.concordia.ca/", "EventManagementServiceImplService");
+            Service service = Service.create(addURL, addQName);
+            EventManagementService eventManagementService = service.getPort(EventManagementService.class);
+            result = shellHelper.getSuccessMessage(eventManagementService.listEventAvailability(EventType.get(eventType)));
         } catch (EventManagementServiceException e) {
             session.getUserActivityLogger().log(String.format("action [listEventAvailability], param eventType [%s], error [%s]", eventType, e.getMessage()));
             return shellHelper.getErrorMessage(e.getMessage());

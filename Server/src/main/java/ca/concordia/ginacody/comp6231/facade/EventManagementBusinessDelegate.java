@@ -62,6 +62,7 @@ public class EventManagementBusinessDelegate implements EventManagementService {
                 LOGGER.info("Listing Available Events from {}, EventType {}", location, eventType);
                 RequestProcessor requestProcessor = new RequestProcessor(location, String.format("%s:listEventAvailability:%s:", Configuration.SERVER_LOCATION, eventType.getName()));
                 requestProcessor.setName(String.format("Request Processor - %s", requestProcessor.hashCode()));
+                requestProcessor.setPriority(Thread.MAX_PRIORITY);
                 requestProcessor.start();
                 try {
                     LOGGER.info("Waiting for Listing Available Events from {}, EventType {}", location, eventType);
@@ -194,7 +195,7 @@ public class EventManagementBusinessDelegate implements EventManagementService {
 
         Configuration.UDP_SERVERS_PORTS.keySet().stream().forEach(location0 -> {
             if(!Configuration.SERVER_LOCATION.equals(location0)) {
-                LOGGER.info("Trying to getBookingSchedule from remote server {}, CustomerID {}", customerID);
+                LOGGER.info("Trying to getBookingSchedule from remote server {}, CustomerID {}", location0, customerID);
                 RequestProcessor requestProcessor = new RequestProcessor(location0, String.format("%s:getBookingSchedule:%s:", Configuration.SERVER_LOCATION, customerID));
                 requestProcessor.setName(String.format("Request Processor - %s", requestProcessor.hashCode()));
                 requestProcessor.start();

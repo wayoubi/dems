@@ -45,6 +45,11 @@ public class Configuration {
      */
     public static String ORB_HOST = "localhost";
 
+    /**
+     * default 9090
+     */
+    public static int HTTP_PORT = 9090;
+
 
     /**
      *

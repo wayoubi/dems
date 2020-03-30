@@ -46,7 +46,8 @@ public class ResponseProcessor extends Thread {
 
     @Override
     public void run()  {
-        String  commandString = new String(this.getRequest().getData()).substring(0, this.getRequest().getData().length);
+        //String  commandString = new String(this.getRequest().getData()).substring(0, this.getRequest().getData().length);
+        String  commandString = new String(this.getRequest().getData()).substring(0, this.getRequest().getLength());
         StringTokenizer stringTokenizer = new StringTokenizer(commandString, ":");
         String remoteServer = stringTokenizer.nextToken();
         String command = stringTokenizer.nextToken();
@@ -124,9 +125,12 @@ public class ResponseProcessor extends Thread {
         }
         //Send reply back to Client "Request Processor"
         try {
+            DatagramSocket datagramSocket = new DatagramSocket();
             DatagramPacket reply = new DatagramPacket(stringBuilder.toString().getBytes(), stringBuilder.toString().getBytes().length, request.getAddress(), request.getPort());
+            LOGGER.debug(String.format("<<<<<<< Sending to >>>>>>>> %s %s", request.getAddress(), request.getPort()));
             LOGGER.info("sending response back to remote server {} to {} ", remoteServer, command);
-            this.getSocket().send(reply);
+            datagramSocket.send(reply);
+            //this.getSocket().send(reply);
         } catch (IOException ioex) {
             LOGGER.error("{} caused by {}", ioex.getMessage(), ioex.getCause().getMessage());
         }
