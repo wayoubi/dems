@@ -1,0 +1,21 @@
+login SHEM3456
+create-event -id SHEE150620 -capacity 2 -type CONFERENCE
+create-event -id SHEE160620 -capacity 1 -type SEMINAR
+login MTLM9000
+create-event -id MTLA160620 -capacity 2 -type CONFERENCE
+create-event -id MTLA150620  -capacity 1 -type TRADESHOW
+create-event -id MTLA170620  -capacity 1 -type TRADESHOW
+login QUEM9000
+create-event -id QUEA150620 -capacity 1 -type CONFERENCE
+create-event -id QUEA160620 -capacity 1 -type SEMINAR
+login QUEC1234
+book-event -customerid QUEC1234 -eventid SHEE150620 -type CONFERENCE
+book-event -customerid QUEC1234 -eventid SHEE160620 -type SEMINAR
+book-event -customerid QUEC1234 -eventid MTLA160620 -type CONFERENCE
+book-event -customerid QUEC1234 -eventid QUEA150620	 -type CONFERENCE
+login SHEC1234
+book-event -customerid SHEC1234 -eventid MTLA170620	 -type TRADESHOW
+login QUEM6785
+list-event-availability -type CONFERENCE
+list-event-availability -type TRADESHOW
+list-event-availability -type SEMINAR
