@@ -1,0 +1,20 @@
+login -user MTLC1000
+book-event -customerid MTLC1000 -eventid MTLM150620 -type CONFERENCE
+book-event -customerid MTLC1000 -eventid MTLA180620 -type CONFERENCE
+book-event -customerid MTLC1000 -eventid SHEA170620 -type TRADESHOW
+book-event -customerid MTLC1000 -eventid SHEM230620 -type TRADESHOW
+book-event -customerid MTLC1000 -eventid QUEE170620 -type TRADESHOW
+book-event -customerid MTLC1000 -eventid QUEM220620 -type TRADESHOW
+login -user SHEC1000
+book-event -customerid SHEC1000 -eventid QUEM240620 -type TRADESHOW
+book-event -customerid SHEC1000 -eventid QUEE170620 -type CONFERENCE
+book-event -customerid SHEC1000 -eventid SHEM230620 -type TRADESHOW
+book-event -customerid SHEC1000 -eventid SHEM230620 -type TRADESHOW
+book-event -customerid SHEC1000 -eventid MTLE240620 -type TRADESHOW
+book-event -customerid SHEC1000 -eventid MTLM150620 -type CONFERENCE
+login -user QUEC1000
+book-event -customerid SHEC1000 -eventid MTLM160620 -type TRADESHOW
+book-event -customerid SHEC1000 -eventid MTLA220620 -type TRADESHOW
+book-event -customerid SHEC1000 -eventid MTLA180620 -type CONFERENCE
+book-event -customerid SHEC1000 -eventid QUEA190620 -type TRADESHOW
+book-event -customerid SHEC1000 -eventid QUEE160620 -type TRADESHOW

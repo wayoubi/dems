@@ -1,0 +1,28 @@
+login -user MTLM1000
+create-event -id MTLM150620 -capacity 2 -type CONFERENCE
+create-event -id MTLM160620 -capacity 1 -type TRADESHOW
+create-event -id MTLM170620 -capacity 1 -type TRADESHOW
+create-event -id MTLA180620 -capacity 2 -type CONFERENCE
+create-event -id MTLA190620 -capacity 1 -type TRADESHOW
+create-event -id MTLA220620 -capacity 1 -type TRADESHOW
+create-event -id MTLE230620 -capacity 1 -type TRADESHOW
+create-event -id MTLE240620 -capacity 1 -type TRADESHOW
+login -user SHEM2000
+create-event -id  SHEA150620 -capacity 2 -type CONFERENCE
+create-event -id  SHEA160620 -capacity 1 -type TRADESHOW
+create-event -id  SHEA170620 -capacity 1 -type TRADESHOW
+create-event -id  SHEE180620 -capacity 2 -type CONFERENCE
+create-event -id  SHEE190620 -capacity 1 -type TRADESHOW
+create-event -id  SHEM220620 -capacity 1 -type TRADESHOW
+create-event -id  SHEM230620 -capacity 1 -type TRADESHOW
+create-event -id  SHEM240620 -capacity 1 -type TRADESHOW
+login -user QUEM3000
+create-event -id  QUEE150620 -capacity 2 -type CONFERENCE
+create-event -id  QUEE160620 -capacity 1 -type TRADESHOW
+create-event -id  QUEE170620 -capacity 1 -type TRADESHOW
+create-event -id  QUEA180620 -capacity 2 -type CONFERENCE
+create-event -id  QUEA190620 -capacity 1 -type TRADESHOW
+create-event -id  QUEM220620 -capacity 1 -type TRADESHOW
+create-event -id  QUEM230620 -capacity 1 -type TRADESHOW
+create-event -id  QUEM240620 -capacity 1 -type TRADESHOW
+
