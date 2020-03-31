@@ -8,7 +8,7 @@ The two major functional requirements of the system are to manage events (create
 ![DEMS Use Case Diagram](images/usecase.png)
 
 # Deployment view (Network Diagram)
-The following diagram shows the different network components and the used protocols between them. The system uses the Java RMI technology to communicate between the clients and their corresponding servers. RMI protocol which is an application layer protocol built on top of TCP/IP is more suitable for networking between components running within the same LAN. Depending on how the program is written, there can be an arbitrary number of remote objects involved, and consequently an arbitrary number of ports allocated. These ports are allocated randomly, so in the normal case it cannot be predicted exactly which ports RMI will use.
+The following diagram shows the different network components and the used protocols between them. The system uses the SOAP Webservices technology to communicate between the clients and their corresponding servers. SOAP protocol which is an application layer protocol is used on top of http and TCP/IP.
 On the other hand, the communication between the servers (server-server) is implemented using the UDP/IP protocol and the java.net standard JDK package. The default UDP port used is 8080. For the sake of running the system on one host (for Demo purposes) other ports are used (8081, 8082) to prevent servers trying to listen on the same port and have them fail to start. In an ideal case, only port 8080 is going to be used only.
 
 ![DEMS Network Diagram](images/network.png)
