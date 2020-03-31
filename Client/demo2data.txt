@@ -19,3 +19,11 @@ login QUEM6785
 list-event-availability -type CONFERENCE
 list-event-availability -type TRADESHOW
 list-event-availability -type SEMINAR
+login -user QUEC1234
+swap-event -customerid QUEC1234 -eventid MTLA150620 -type TRADESHOW -oldeventid QUEA150620 -oldtype CONFERENCE
+swap-event -customerid QUEC1234 -eventid QUEA160620 -type SEMINAR -oldeventid SHEE150620 CONFERENCE
+list-bookings -customerid QUEC1234
+login -user SHEM3456
+swap-event -customerid SHEC1234 -eventid QUEA160620 -type SEMINAR -oldeventid MTLA170620 -oldtype TRADESHOW
+swap-event -customerid SHEC1234 -eventid SHEE150620 -type SEMINAR -oldeventid MTLA160620 -oldtype CONFERENCE
+list-bookings -customerid SHEC1234
