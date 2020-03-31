@@ -1,15 +1,12 @@
 package ca.concordia.ginacody.comp6231.dao;
 
 import ca.concordia.ginacody.comp6231.config.Configuration;
-import ca.concordia.ginacody.comp6231.enums.EventType;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
-import ca.concordia.ginacody.comp6231.services.EventManagementService;
 import ca.concordia.ginacody.comp6231.vo.EventVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 

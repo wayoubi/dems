@@ -1,7 +1,6 @@
 package ca.concordia.ginacody.comp6231.processors;
 
 import ca.concordia.ginacody.comp6231.config.Configuration;
-import ca.concordia.ginacody.comp6231.services.EventManagementServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

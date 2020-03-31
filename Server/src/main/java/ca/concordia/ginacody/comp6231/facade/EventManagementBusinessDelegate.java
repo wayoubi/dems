@@ -4,11 +4,10 @@ import ca.concordia.ginacody.comp6231.config.Configuration;
 import ca.concordia.ginacody.comp6231.enums.EventType;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
 import ca.concordia.ginacody.comp6231.processors.RequestProcessor;
-import ca.concordia.ginacody.comp6231.services.EventManagementService;
+import ca.concordia.ginacody.comp6231.services.ws.EventManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.rmi.RemoteException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -250,20 +249,12 @@ public class EventManagementBusinessDelegate implements EventManagementService {
         }
     }
 
-    /**
-     *
-     * @param customerID
-     * @param eventID
-     * @param eventType
-     * @param oldEventID
-     * @param oldEventType
-     * @return
-     */
-    public String swapEvent(String customerID, String eventID, EventType eventType, String oldEventID, EventType oldEventType) {
+    @Override
+    public String swapEvent(String customerID, String eventID, String eventType, String oldEventID, String oldEventType) throws EventManagementServiceException {
         String trxNumber = customerID  + UUID.randomUUID().toString();
-        String result = this.bookEvent(trxNumber, eventID, eventType);
+        String result = this.bookEvent(trxNumber, eventID, EventType.get(eventType));
         if(result.startsWith("Success:")) {
-            result = this.cancelEvent(customerID, oldEventID, oldEventType);
+            result = this.cancelEvent(customerID, oldEventID, EventType.get(oldEventType));
             if(result.startsWith("Success:")) {
                 String temp = null;
                 do {
@@ -275,7 +266,7 @@ public class EventManagementBusinessDelegate implements EventManagementService {
             } else {
                 String temp = null;
                 do {
-                    temp = this.cancelEvent(trxNumber, eventID, eventType);
+                    temp = this.cancelEvent(trxNumber, eventID, EventType.get(eventType));
                 } while(temp.startsWith("Communication Error:"));
                 result = result.replace(trxNumber, customerID);
             }

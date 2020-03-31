@@ -23,27 +23,7 @@ public class Configuration {
     /**
      *
      */
-    public static String RMI_REGISTRY_HOST = "localhost";
-
-    /**
-     *
-     */
-    public static int RMI_PORT = 1099;
-
-    /**
-     *
-     */
     public static int UDP_PORT = 8080;
-
-    /**
-     *
-     */
-    public static int ORB_PORT = 1050;
-
-    /**
-     *
-     */
-    public static String ORB_HOST = "localhost";
 
     /**
      * default 9090

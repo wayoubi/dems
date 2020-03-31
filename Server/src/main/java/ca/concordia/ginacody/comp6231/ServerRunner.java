@@ -37,13 +37,6 @@ public class ServerRunner {
             Configuration.SERVER_LOCATION = args[0].trim();
         }
 
-//        LOGGER.debug("checking passed RMI Server port to be in valid {}", args[1]);
-//        try {
-//            Configuration.RMI_PORT = Integer.parseInt(args[1].trim());
-//        } catch(NumberFormatException nfex) {
-//            LOGGER.error("Passed RMI Server port is invalid {}, default will be used {}", args[1], Configuration.RMI_PORT);
-//        }
-
         LOGGER.debug("checking passed UDP Server port to be in valid {}", args[1]);
         try {
             Configuration.UDP_PORT = Integer.parseInt(args[1]);
@@ -58,31 +51,10 @@ public class ServerRunner {
             LOGGER.error("Passed RMI Server port is invalid {}, default will be used {}", args[2].trim(), Configuration.UDP_PORT);
         }
 
-//        LOGGER.debug("checking passed ORB Server port to be in valid {}", args[3]);
-//        try {
-//            Configuration.ORB_PORT = Integer.parseInt(args[3]);
-//        } catch(NumberFormatException nfex) {
-//            LOGGER.error("Passed ORB port is invalid {}, default will be used {}", args[2].trim(), Configuration.ORB_PORT);
-//        }
-
-//        LOGGER.debug("checking passed ORB Host to be in valid {}", args[4]);
-//        Configuration.ORB_HOST = args[4];
-
-
-//        LOGGER.info("Starting RMI Server .....");
-//        Thread rmiInitializer = new Thread(new RMIInitializer());
-//        rmiInitializer.setName("RMIInitializer");
-//        rmiInitializer.start();
-
         LOGGER.info("Starting UDP Server .....");
         Thread udpServerThread = new Thread(new UDPServer());
         udpServerThread.setName("UDP Server Thread");
         udpServerThread.start();
-
-//        LOGGER.info("Starting CORBA Server .....");
-//        Thread corbaServerThread = new Thread(new CorbaServer());
-//        corbaServerThread.setName("CORBA Server Thread");
-//        corbaServerThread.start();
 
         LOGGER.info("Starting SOAP Server .....");
         Thread soapServerThread = new Thread(new SOAPServer());

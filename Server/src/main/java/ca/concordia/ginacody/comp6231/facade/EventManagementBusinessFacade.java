@@ -4,7 +4,7 @@ import ca.concordia.ginacody.comp6231.dao.BookingDAO;
 import ca.concordia.ginacody.comp6231.dao.EventDAO;
 import ca.concordia.ginacody.comp6231.enums.EventType;
 import ca.concordia.ginacody.comp6231.exception.EventManagementServiceException;
-import ca.concordia.ginacody.comp6231.services.EventManagementService;
+import ca.concordia.ginacody.comp6231.services.ws.EventManagementService;
 import ca.concordia.ginacody.comp6231.vo.EventVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +64,12 @@ public class EventManagementBusinessFacade implements EventManagementService {
         EventVO eventVO = new EventVO(eventID, eventType);
         BookingDAO bookingDAO = new BookingDAO();
         return bookingDAO.removeBooking(customerID, eventVO);
+    }
+
+    @Override
+    public String swapEvent(String customerID, String eventID, String eventType, String oldEventID, String oldEventType) throws EventManagementServiceException {
+        //No impl
+        return null;
     }
 
     /**

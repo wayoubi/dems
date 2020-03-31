@@ -63,6 +63,6 @@ public class EventManagementServiceImpl implements EventManagementService {
     @Override
     public String swapEvent(String customerID, String eventID, String eventType, String oldEventID, String oldEventType) throws EventManagementServiceException {
         EventManagementBusinessDelegate eventManagementBusinessDelegate = new EventManagementBusinessDelegate();
-        return eventManagementBusinessDelegate.swapEvent(customerID, eventID, EventType.get(eventType), oldEventID, EventType.get(oldEventType));
+        return eventManagementBusinessDelegate.swapEvent(customerID, eventID, eventType, oldEventID, oldEventType);
     }
 }

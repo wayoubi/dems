@@ -1,6 +1,5 @@
 package ca.concordia.ginacody.comp6231.client.log;
 
-import ca.concordia.ginacody.comp6231.client.controller.EventManagerController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

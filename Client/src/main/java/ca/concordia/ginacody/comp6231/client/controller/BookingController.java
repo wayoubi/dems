@@ -2,8 +2,6 @@ package ca.concordia.ginacody.comp6231.client.controller;
 
 import ca.concordia.ginacody.comp6231.client.cache.Session;
 import ca.concordia.ginacody.comp6231.client.cache.UserType;
-import ca.concordia.ginacody.comp6231.client.corba.EventManagementServiceCorbaBean;
-import ca.concordia.ginacody.comp6231.client.rmi.EventManagementServiceFactoryBean;
 import ca.concordia.ginacody.comp6231.client.shell.ShellHelper;
 import ca.concordia.ginacody.comp6231.enums.EventTimeSlot;
 import ca.concordia.ginacody.comp6231.enums.EventType;
@@ -13,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.standard.ShellComponent;
@@ -35,11 +32,6 @@ public class BookingController {
      */
     private static Logger log = LoggerFactory.getLogger(BookingController.class);
 
-    /**
-     *
-     */
-    private ObjectProvider<EventManagementServiceFactoryBean> eventManagementServiceFactoryBeanProvider;
-
     @Autowired
     private ShellHelper shellHelper;
 
@@ -49,13 +41,6 @@ public class BookingController {
     @Autowired
     private BeanFactory beanFactory;
 
-    @Autowired
-    EventManagementServiceCorbaBean eventManagementServiceCorbaBean;
-
-    @Autowired
-    public void UsingMyPrototype(ObjectProvider<EventManagementServiceFactoryBean> eventManagementServiceFactoryBeanProvider) {
-        this.eventManagementServiceFactoryBeanProvider = eventManagementServiceFactoryBeanProvider;
-    }
 
     @Value("${dems.pattern.username}")
     private String usernamePattern;
