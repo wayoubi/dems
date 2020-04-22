@@ -1,25 +1,160 @@
-login -user MTLM1234
-create-event -capacity 2 -id MTLM020220 -type CONFERENCE
-create-event -capacity 2 -id MTLM030220 -type CONFERENCE
-create-event -capacity 2 -id MTLM040220 -type CONFERENCE
-create-event -capacity 2 -id MTLM050220 -type CONFERENCE
+login -user MTLM3456
+create-event -id MTLA080820 -type CONFERENCE -capacity 2
+create-event -id MTLM110820 -type SEMINAR -capacity 1
+create-event -id MTLM120820 -type SEMINAR -capacity 1
 
-login -user SHEM1234
-create-event -capacity 2 -id SHEM020220 -type CONFERENCE
-create-event -capacity 2 -id SHEM030220 -type CONFERENCE
-create-event -capacity 2 -id SHEM040220 -type CONFERENCE
-create-event -capacity 2 -id SHEM050220 -type CONFERENCE
-create-event -capacity 2 -id SHEM060220 -type CONFERENCE
+login -user SHEM9000
+create-event -id SHEE080820 -type TRADESHOW -capacity 1
 
-login -user MTLM1234
-book-event -customerid MTLC1234 -eventid MTLM020220 -type CONFERENCE
-book-event -customerid MTLC1234 -eventid MTLM030220 -type CONFERENCE
-book-event -customerid MTLC1234 -eventid MTLM040220 -type CONFERENCE
-book-event -customerid MTLC1234 -eventid MTLM050220 -type CONFERENCE
+login -user QUEM9000
+create-event -id QUEA250820 -type SEMINAR -capacity 1
+create-event -id QUEE150820 -type TRADESHOW -capacity 1
 
-book-event -customerid MTLC1234 -eventid SHEM020220 -type CONFERENCE
-book-event -customerid MTLC1234 -eventid SHEM030220 -type CONFERENCE
-book-event -customerid MTLC1234 -eventid SHEM040220 -type CONFERENCE
-book-event -customerid MTLC1234 -eventid SHEM050220 -type CONFERENCE
+login -user SHEC1234
+book-event -customerid SHEC1234 -eventid MTLA080820 -type CONFERENCE
+book-event -customerid SHEC1234 -eventid MTLM110820 -type SEMINAR
+book-event -customerid SHEC1234 -eventid QUEA250820 -type SEMINAR
+book-event -customerid SHEC1234 -eventid SHEE080820 -type TRADESHOW
 
-swap-event -customerid MTLC1234 -eventid SHEM060220 -type CONFERENCE -oldeventid MTLM020220 -oldtype CONFERENCE
+===============================
+Test Cases as provided by the TA:
+Test1 - MTLM3456 manager - add eventID QUEE110820 with eventType "Seminars" with booking capacity 1(W) (5)
+
+Test 2: SHEM9000 MANAGER - - add eventID SHEA090820 with eventType "Conferences" with booking capacity -2 (W) (5)
+
+Test 3: QUEM9000 MANAGER - - add eventID XYZA120820 with eventType "Conferences" with booking capacity 2 (W) (15)
+
+Test 4: SHEM6785 MANAGER - - listEventAvailability for all the three eventTypes. (R) T- (QUEE150820-1, SHEE080820-0) S- (QUEA250820-0, MTLM110820-0, MTLM120820-1) C-(MTLA080820-1) (20)
+
+Test 5: SHEM9000 MANAGER - - Swap eventID SHEE080820 with eventType “Trade Shows" with the eventID QUEE150820 with eventType "Trade Shows” for SHEC1234 (W) (20)
+
+Test 6: MTLM3456 MANAGER - - Remove event with eventID MTLM110820 and eventType "Seminars" (R), - getBookingSchedule for customer SHEC1234(R)
+===============================
+
+ ______     ________   ____    ____    ______        ______   __     _                       _
+|_   _ `.  |_   __  | |_   \  /   _| .' ____ \     .' ___  | [  |   (_)                     / |_
+  | | `. \   | |_ \_|   |   \/   |   | (___ \_|   / .'   \_|  | |   __    .---.   _ .--.   `| |-'
+  | |  | |   |  _| _    | |\  /| |    _.____`.    | |         | |  [  |  / /__\\ [ `.-. |   | |
+ _| |_.' /  _| |__/ |  _| |_\/_| |_  | \____) |   \ `.___.'\  | |   | |  | \__.,  | | | |   | |,
+|______.'  |________| |_____||_____|  \______.'    `.____ .' [___] [___]  '.__.' [___||__]  \__/
+
+A System Designed for Distributed System Design (COMP6231)
+(c) Concordia University, Winter 2020 (versioN 1.0)
+EDMS Client# login -user MTLM3456
+User MTLM3456 logged in successfully
+EDMS Client# create-event -id MTLA080820 -type CONFERENCE -capacity 2
+Success: Event MTLA080820 added successfully
+EDMS Client# create-event -id MTLM110820 -type SEMINAR -capacity 1
+Success: Event MTLM110820 added successfully
+EDMS Client# create-event -id MTLM120820 -type SEMINAR -capacity 1
+Success: Event MTLM120820 added successfully
+EDMS Client# login -user SHEM9000
+User SHEM9000 logged in successfully
+EDMS Client# create-event -id SHEE080820 -type TRADESHOW -capacity 1
+Success: Event SHEE080820 added successfully
+EDMS Client# login -user QUEM9000
+User QUEM9000 logged in successfully
+EDMS Client# create-event -id QUEA250820 -type SEMINAR -capacity 1
+Success: Event QUEA250820 added successfully
+EDMS Client# create-event -id QUEE150820 -type TRADESHOW -capacity 1
+Success: Event QUEE150820 added successfully
+EDMS Client# login -user SHEC1234
+User SHEC1234 logged in successfully
+EDMS Client# book-event -customerid SHEC1234 -eventid MTLA080820 -type CONFERENCE
+Success: Event MTLA080820 booked for Customer SHEC1234 successfully
+EDMS Client# book-event -customerid SHEC1234 -eventid MTLM110820 -type SEMINAR
+Success: Event MTLM110820 booked for Customer SHEC1234 successfully
+EDMS Client# book-event -customerid SHEC1234 -eventid QUEA250820 -type SEMINAR
+Success: Event QUEA250820 booked for Customer SHEC1234 successfully
+EDMS Client# book-event -customerid SHEC1234 -eventid SHEE080820 -type TRADESHOW
+Success: Event SHEE080820 booked for Customer SHEC1234 successfully
+EDMS Client# login -user MTLM3456
+User MTLM3456 logged in successfully
+EDMS Client# create-event -id QUEE110820 -type SEMINAR -capacity 1
+Invalid eventID, User MTLM3456 is not allowed to create event QUEE110820 eventid, location mismatch
+EDMS Client# login -user SHEM9000
+User SHEM9000 logged in successfully
+EDMS Client# create-event -id SHEA090820 -type CONFERENCE -capacity -2
+Invalid capacity value -2
+EDMS Client# login -user QUEM9000
+User QUEM9000 logged in successfully
+EDMS Client# create-event -id XYZA120820 -type CONFERENCE -capacity 2
+Invalid eventID, User QUEM9000 is not allowed to create event XYZA120820 eventid, location mismatch
+EDMS Client# login -user SHEM6785
+User SHEM6785 logged in successfully
+EDMS Client# list-event-availability -type CONFERENCE
++------------------------------------+
+| Response from Local Server SHE
++------------------------------------+
+Error: No CONFERENCE Events exist, nothing will be listed from local server SHE
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+Error: No CONFERENCE Events exist, nothing will be listed, Response from server QUE
+
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+Success:CONFERENCE MTLA080820 scheduled on Sat Aug 08 00:00:00 EDT 2020 at AFTERNOON - available places [1]
+
+
+EDMS Client# list-event-availability -type SEMINAR
++------------------------------------+
+| Response from Local Server SHE
++------------------------------------+
+Error: No SEMINAR Events exist, nothing will be listed from local server SHE
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+Success:SEMINAR QUEA250820 scheduled on Tue Aug 25 00:00:00 EDT 2020 at AFTERNOON - available places [0]
+
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+Success:SEMINAR MTLM110820 scheduled on Tue Aug 11 00:00:00 EDT 2020 at MORNING - available places [0]
+SEMINAR MTLM120820 scheduled on Wed Aug 12 00:00:00 EDT 2020 at MORNING - available places [1]
+
+
+EDMS Client# list-event-availability -type TRADESHOW
++------------------------------------+
+| Response from Local Server SHE
++------------------------------------+
+Success:TRADESHOW SHEE080820 scheduled on Sat Aug 08 00:00:00 EDT 2020 at EVENING - available places [0]
+
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+Success:TRADESHOW QUEE150820 scheduled on Sat Aug 15 00:00:00 EDT 2020 at EVENING - available places [1]
+
++-------------------------------------+
+| Response from Remote Server MTL
++-------------------------------------+
+Error: No TRADESHOW Events exist, nothing will be listed, Response from server MTL
+
+
+EDMS Client# login -user SHEM9000
+User SHEM9000 logged in successfully
+EDMS Client# swap-event -customerid SHEC1234 -eventid QUEE150820 -type TRADESHOW -oldeventid SHEE080820 -oldtype TRADESHOW
+Success: customerID SHEC1234 swapped Event SHEE080820 of Type TRADESHOW with Event QUEE150820 of Type TRADESHOW
+EDMS Client# login -user MTLM3456
+User MTLM3456 logged in successfully
+EDMS Client# remove-event -id MTLM110820 -type SEMINAR
+Success: Event MTLM110820 removed successfully
+EDMS Client# list-bookings -customerid SHEC1234
++------------------------------------+
+| Response from Local Server MTL
++------------------------------------+
+Success:CONFERENCE MTLA080820 on Sat Aug 08 00:00:00 EDT 2020 at AFTERNOON is confirmed
+SEMINAR MTLM120820 on Wed Aug 12 00:00:00 EDT 2020 at MORNING is confirmed
+
++-------------------------------------+
+| Response from Remote Server QUE
++-------------------------------------+
+Success:TRADESHOW QUEE150820 on Sat Aug 15 00:00:00 EDT 2020 at EVENING is confirmed
+SEMINAR QUEA250820 on Tue Aug 25 00:00:00 EDT 2020 at AFTERNOON is confirmed
+
++-------------------------------------+
+| Response from Remote Server SHE
++-------------------------------------+
+Error: No bookings for SHEC1234 on SHE database, Response from remote server SHE
+
